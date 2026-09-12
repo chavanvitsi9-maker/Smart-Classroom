@@ -1,0 +1,2345 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Classroom | ระบบจัดการสำหรับครูผู้สอน</title>
+    <!-- นำเข้าฟอนต์ Sarabun จาก Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- นำเข้า SheetJS (xlsx) สำหรับดาวน์โหลด Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <style>
+        /* =========================================
+           1. โทนสีและภาพรวม (Navy & Slate 3D Theme)
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            background-image: radial-gradient(#cbd5e1 20%, transparent 20%), radial-gradient(#cbd5e1 20%, transparent 20%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            min-height: 100vh;
+            color: #334155;
+            padding-bottom: 60px;
+        }
+
+        /* =========================================
+           2. แถบ Header ด้านบนสุด (Navy Formal)
+           ========================================= */
+        .navbar {
+            background: #1e293b;
+            padding: 18px 24px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+            border-bottom: 3px solid #334155;
+            position: sticky;
+            top: 0;
+            z-index: 4000;
+        }
+
+        .navbar-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .teacher-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            width: 50px;
+            height: 50px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            border: 2px solid #60a5fa;
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+        }
+
+        .brand-text h1 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #f8fafc;
+            line-height: 1.2;
+        }
+
+        .brand-text p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .btn-home-nav {
+            background: #334155;
+            color: #f8fafc;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border: 1px solid #475569;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 0 #0f172a;
+        }
+
+        .btn-home-nav:hover {
+            background: #3b82f6;
+            color: #ffffff;
+            border-color: #60a5fa;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+
+        /* =========================================
+           3. หน้าเลือกห้องเรียน (Class Selection View)
+           ========================================= */
+        .selection-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .selection-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .selection-header p {
+            font-size: 1rem;
+            color: #64748b;
+        }
+
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .class-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 10px 25px rgba(30, 41, 59, 0.07);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .class-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 35px rgba(37, 99, 235, 0.15);
+            border-color: #93c5fd;
+        }
+
+        .class-card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .class-card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .class-card-code {
+            font-size: 0.9rem;
+            color: #3b82f6;
+            font-weight: 600;
+            background: #eff6ff;
+            padding: 4px 10px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 12px;
+            width: fit-content;
+        }
+
+        .class-card-room {
+            font-size: 0.95rem;
+            color: #64748b;
+            margin-bottom: 18px;
+        }
+
+        .btn-enter-class {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 0 #1d4ed8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .class-card:hover .btn-enter-class {
+            background: #1d4ed8;
+            box-shadow: 0 4px 0 #1e40af;
+        }
+
+        /* =========================================
+           4. แถบเมนูด้านซ้าย + พื้นที่ทำงาน (Workspace Layout)
+           ========================================= */
+        .workspace-layout {
+            display: grid;
+            grid-template-columns: 270px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .sidebar-nav {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 20px;
+            box-shadow: 0 12px 28px rgba(30, 41, 59, 0.08);
+            border: 2px solid #ffffff;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: sticky;
+            top: 100px;
+        }
+
+        .active-class-info {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: #ffffff;
+            padding: 16px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+            box-shadow: 0 6px 15px rgba(30, 41, 59, 0.15);
+        }
+
+        .active-class-info h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .active-class-info p {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+
+        .sidebar-menu-btn {
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border: none;
+            background: #f8fafc;
+            color: #475569;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+            text-align: left;
+            border: 1px solid #f1f5f9;
+        }
+
+        .sidebar-menu-btn:hover {
+            background: #eff6ff;
+            color: #2563eb;
+            transform: translateX(4px);
+        }
+
+        .sidebar-menu-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .sidebar-menu-btn.btn-back-room {
+            background: #fff1f2;
+            color: #e11d48;
+            border-color: #ffe4e6;
+            margin-top: 10px;
+        }
+
+        .sidebar-menu-btn.btn-back-room:hover {
+            background: #ffe4e6;
+            color: #be123c;
+            transform: translateX(0);
+        }
+
+        .main-workspace {
+            min-width: 0;
+        }
+
+        /* =========================================
+           5. การ์ดเนื้อหาหลัก (Content Cards)
+           ========================================= */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 8px 20px rgba(30, 41, 59, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .section-header-card h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* KPI Cards */
+        .stats-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 18px 20px;
+            border: 2px solid #ffffff;
+            box-shadow: 0 8px 20px rgba(30, 41, 59, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .kpi-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .kpi-icon.blue { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .kpi-icon.green { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        .kpi-icon.orange { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
+        .kpi-icon.purple { background: #faf5ff; color: #9333ea; border: 1px solid #e9d5ff; }
+
+        .kpi-details h4 {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .kpi-details p {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+
+        /* Action Toolbar */
+        .action-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s ease;
+            color: #ffffff;
+        }
+
+        .btn-pdf { background: #ef4444; box-shadow: 0 4px 0 #b91c1c; }
+        .btn-pdf:hover { background: #dc2626; }
+
+        .btn-excel { background: #10b981; box-shadow: 0 4px 0 #047857; }
+        .btn-excel:hover { background: #059669; }
+
+        /* Tables */
+        .table-card {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 12px 28px rgba(30, 41, 59, 0.08);
+            border: 2px solid #ffffff;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 18px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #ffffff;
+        }
+
+        .custom-table th {
+            background: #f8fafc;
+            color: #334155;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 14px 16px;
+            border-bottom: 2px solid #e2e8f0;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .custom-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+            color: #334155;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .custom-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Forms & Inputs */
+        .form-card {
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 12px 28px rgba(30, 41, 59, 0.08);
+            border: 2px solid #ffffff;
+            margin-bottom: 24px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .custom-input, .custom-select, .custom-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 2px solid #cbd5e1;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s;
+            background: #ffffff;
+        }
+
+        .custom-input:focus, .custom-select:focus, .custom-textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .btn-submit-form {
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #1d4ed8;
+            transition: all 0.15s ease;
+        }
+
+        .btn-submit-form:hover { background: #1d4ed8; }
+
+        /* Score inputs & Status Badges */
+        .score-input {
+            width: 70px;
+            padding: 6px 10px;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .badge-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge-status.success { background: #dcfce7; color: #15803d; }
+        .badge-status.pending { background: #fff7ed; color: #c2410c; }
+        .badge-status.active { background: #eff6ff; color: #1d4ed8; }
+
+        /* Loading & Modals */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #ffffff;
+        }
+
+        .cute-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #ffffff;
+            border-bottom-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Responsive Layout */
+        @media (max-width: 900px) {
+            .workspace-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-nav {
+                position: static;
+            }
+        }
+
+        /* Print Media Styles */
+        @media print {
+            .navbar, .sidebar-nav, .action-toolbar, .btn-submit-form, .loading-overlay {
+                display: none !important;
+            }
+            .workspace-layout {
+                display: block !important;
+            }
+            .content-section {
+                display: block !important;
+            }
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Header ด้านบน -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="teacher-brand">
+                <div class="brand-icon">👨‍🏫</div>
+                <div class="brand-text">
+                    <h1>ระบบจัดการและตรวจงานสำหรับครู</h1>
+                    <p>Smart Classroom Teacher Portal</p>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                <div style="color: #38bdf8; font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                    <span>👨‍🏫</span> <span id="teacherNameDisplay">กำลังโหลดชื่อครู...</span>
+                </div>
+                <button type="button" onclick="goToPage('index')" class="btn-home-nav" style="border: none; cursor: pointer;">
+                    🏠 กลับหน้าหลัก
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- เนื้อหาหลัก -->
+    <main class="container">
+
+        <!-- =========================================
+           VIEW 1: หน้าเลือกห้องเรียน (Class Selection View)
+           ========================================= -->
+        <div id="classSelectionView">
+            <div class="selection-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h2><span>🏫</span> เลือกห้องเรียน / รายวิชาเพื่อเข้าสู่ระบบจัดการ</h2>
+                    <p>คลิกเลือกรายวิชาที่ต้องการตรวจงาน ดูสถิติ หรือจัดการข้อมูลนักเรียน</p>
+                </div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button type="button" class="btn-action" onclick="openManageRoomsModal()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; padding: 12px 20px; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);">
+                        <span>🏫</span> จัดการชั้นเรียน (เพิ่ม/ลบห้อง)
+                    </button>
+                    <button type="button" class="btn-action" onclick="downloadSystemBackup()" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: white; border: none; padding: 12px 20px; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);">
+                        <span>📦</span> สำรองข้อมูลระบบ (Backup)
+                    </button>
+                    <button type="button" class="btn-action" onclick="openAddSubjectModal()" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; border: none; padding: 12px 20px; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);">
+                        <span>📖</span> เพิ่มห้องเรียน / รายวิชา
+                    </button>
+                    <button type="button" class="btn-action" onclick="openAddStudentModal()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 12px 20px; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);">
+                        <span>➕</span> เพิ่มนักเรียนใหม่เข้าชั้นเรียน
+                    </button>
+                </div>
+            </div>
+
+            <!-- กล่องแสดงการ์ดห้องเรียน (สร้างด้วย JavaScript) -->
+            <div class="class-grid" id="classCardGrid">
+                <!-- ตัวอย่างการ์ดจะถูกสร้างด้วย JS -->
+                <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: #ffffff; border-radius: 24px;">
+                    <div class="cute-spinner" style="margin: 0 auto 16px auto;"></div>
+                    <p style="font-weight: 700; color: #475569;">กำลังโหลดรายวิชาและห้องเรียนทั้งหมด...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================
+           VIEW 2: พื้นที่ทำงานหลัก + แถบเมนูด้านซ้าย (Workspace View)
+           ========================================= -->
+        <div id="workspaceView" style="display: none;">
+            <div class="workspace-layout">
+
+                <!-- แถบเมนูด้านซ้าย (Left Sidebar) -->
+                <aside class="sidebar-nav">
+                    <!-- การ์ดบอกห้องเรียนที่เลือกอยู่ -->
+                    <div class="active-class-info">
+                        <h3 id="sidebarClassName">📖 กำลังโหลด...</h3>
+                        <p id="sidebarClassCode">รหัสวิชา: -</p>
+                    </div>
+
+                    <!-- เมนูทั้ง 6 รายการ -->
+                    <button type="button" class="sidebar-menu-btn active" id="menuBtnStats" onclick="switchSidebarMenu('stats')">
+                        <span>📊</span> 1. สถิติภาพรวมและรายงาน
+                    </button>
+
+                    <button type="button" class="sidebar-menu-btn" id="menuBtnStudents" onclick="switchSidebarMenu('students')">
+                        <span>👨‍🎓</span> 2. รายชื่อนักเรียนทั้งหมด
+                    </button>
+
+                    <button type="button" class="sidebar-menu-btn" id="menuBtnAssignments" onclick="switchSidebarMenu('assignments')">
+                        <span>📝</span> 3. หน้ามอบหมายงาน
+                    </button>
+
+                    <button type="button" class="sidebar-menu-btn" id="menuBtnGrading" onclick="switchSidebarMenu('grading')">
+                        <span>📑</span> 4. หน้าให้คะแนน
+                    </button>
+
+                    <button type="button" class="sidebar-menu-btn" id="menuBtnQuizzes" onclick="switchSidebarMenu('quizzes')">
+                        <span>✍️</span> 5. หน้าแบบทดสอบ
+                    </button>
+
+                    <button type="button" class="sidebar-menu-btn btn-back-room" onclick="returnToClassSelection()">
+                        <span>🚪</span> 6. กลับเลือกห้อง
+                    </button>
+                </aside>
+
+                <!-- พื้นที่แสดงเนื้อหาด้านขวา (Main Workspace Content) -->
+                <section class="main-workspace">
+
+                    <!-- MENU 1: สถิติภาพรวมและรายงาน -->
+                    <div id="menuStatsContent" class="content-section active">
+                        <div class="section-header-card">
+                            <h2><span>📊</span> สถิติภาพรวมและรายงานผล</h2>
+                            <div class="action-toolbar">
+                                <button type="button" class="btn-action btn-pdf" onclick="exportPDF()">
+                                    <span>🖨️</span> พิมพ์รายงาน (PDF)
+                                </button>
+                                <button type="button" class="btn-action btn-excel" onclick="exportExcel()">
+                                    <span>📊</span> ดาวน์โหลด Excel
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- KPI Summary Cards -->
+                        <div class="stats-summary-grid">
+                            <div class="kpi-card">
+                                <div class="kpi-icon blue">👨‍🎓</div>
+                                <div class="kpi-details">
+                                    <h4>นักเรียนทั้งหมด</h4>
+                                    <p id="kpiTotalStudents">0 คน</p>
+                                </div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-icon green">🏆</div>
+                                <div class="kpi-details">
+                                    <h4>คะแนนเฉลี่ยห้อง</h4>
+                                    <p id="kpiAvgScore">0.0</p>
+                                </div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-icon purple">📈</div>
+                                <div class="kpi-details">
+                                    <h4>อัตราการส่งงาน</h4>
+                                    <p id="kpiSubmissionRate">0%</p>
+                                </div>
+                            </div>
+                            <div class="kpi-card">
+                                <div class="kpi-icon orange">⚠️</div>
+                                <div class="kpi-details">
+                                    <h4>นักเรียนที่ค้างส่ง</h4>
+                                    <p id="kpiPendingStudents">0 คน</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ตารางสรุปสถิติ -->
+                        <div class="table-card">
+                            <h3 style="margin-bottom: 16px; font-size: 1.1rem; color: #0f172a;">📈 ตารางสรุปผลสถิตินักเรียนรายบุคคล</h3>
+                            <div class="table-wrapper">
+                                <table class="custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:60px; text-align:center;">เลขที่</th>
+                                            <th>รหัสนักเรียน</th>
+                                            <th>ชื่อ - นามสกุล</th>
+                                            <th style="text-align:center;">จำนวนงานที่ส่ง</th>
+                                            <th style="text-align:center;">คะแนนรวม</th>
+                                            <th style="text-align:center;">สถานะ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="statsTableBody">
+                                        <tr><td colspan="6" style="text-align:center;">กำลังประมวลผลสถิติ...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MENU 2: รายชื่อนักเรียนทั้งหมดในชั้นเรียน -->
+                    <div id="menuStudentsContent" class="content-section">
+                        <div class="section-header-card">
+                            <h2><span>👨‍🎓</span> รายชื่อนักเรียนทั้งหมดในชั้นเรียน</h2>
+                            <span class="badge-status active" id="studentCountBadge">รวม 0 คน</span>
+                        </div>
+
+                        <div class="table-card">
+                            <div class="table-wrapper">
+                                <table class="custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:70px; text-align:center;">เลขที่</th>
+                                            <th style="width:130px;">รหัสนักเรียน</th>
+                                            <th>ชื่อ - นามสกุล</th>
+                                            <th style="width:130px; text-align:center;">รหัสผ่าน (PIN)</th>
+                                            <th style="width:220px; text-align:center;">การจัดการ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="studentsTableBody">
+                                        <tr><td colspan="5" style="text-align:center;">กำลังโหลดรายชื่อนักเรียน...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MENU 3: หน้ามอบหมายงาน -->
+                    <div id="menuAssignmentsContent" class="content-section">
+                        <div class="section-header-card">
+                            <h2><span>📝</span> มอบหมายงาน / ภาระงานใหม่</h2>
+                        </div>
+
+                        <!-- ฟอร์มสร้างภาระงาน -->
+                        <div class="form-card">
+                            <h3 style="margin-bottom: 16px; font-size: 1.1rem; color: #0f172a;">➕ สั่งงานใหม่สำหรับวิชานี้</h3>
+                            <form id="createAssignmentForm" onsubmit="handleCreateAssignment(event)">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="assignTitle">📌 ชื่อชิ้นงาน / ภาระงาน</label>
+                                        <input type="text" id="assignTitle" class="custom-input" placeholder="เช่น ใบงานที่ 1 การเขียนโปรแกรม" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="assignMaxScore">🏆 คะแนนเต็ม</label>
+                                        <input type="number" id="assignMaxScore" class="custom-input" placeholder="10" value="10" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="assignDueDate">📅 กำหนดส่ง</label>
+                                        <input type="date" id="assignDueDate" class="custom-input">
+                                    </div>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>👥 ประเภทงาน</label>
+                                        <div style="display: flex; gap: 16px; align-items: center; margin-top: 6px;">
+                                            <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                                <input type="radio" name="assignTaskType" value="เดี่ยว" checked> 👤 งานเดี่ยว
+                                            </label>
+                                            <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                                <input type="radio" name="assignTaskType" value="กลุ่ม"> 👥 งานกลุ่ม
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>📥 ประเภทการส่งงาน</label>
+                                        <div style="display: flex; gap: 16px; align-items: center; margin-top: 6px;">
+                                            <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                                <input type="radio" name="assignSubmissionType" value="รูปภาพ/ไฟล์" checked> 📷 รูปภาพ / ไฟล์
+                                            </label>
+                                            <label style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                                 <input type="radio" name="assignSubmissionType" value="ลิงก์ Google Drive" onchange="toggleTeacherDriveLinkInput()"> 🔗 ลิงก์ Google Drive
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                 <div class="form-group" id="teacherDriveLinkGroup" style="display: none; margin-bottom: 16px;">
+                                     <label for="assignDriveLink">🔗 ลิงก์ Google Drive (สำหรับแนบเอกสารสั่งงาน / แม่แบบให้การบ้านนักเรียน)</label>
+                                     <input type="url" id="assignDriveLink" class="custom-input" placeholder="https://drive.google.com/file/d/...">
+                                 </div>
+                                </div>
+
+                                <div class="form-group" style="margin-bottom: 16px;">
+                                    <label for="assignDetail">📝 คำอธิบาย / คำสั่งงาน</label>
+                                    <textarea id="assignDetail" class="custom-textarea" rows="3" placeholder="ระบุรายละเอียดภาระงาน..."></textarea>
+                                </div>
+                                <button type="submit" class="btn-submit-form">➕ บันทึกสร้างภาระงานใหม่</button>
+                            </form>
+                        </div>
+
+                        <!-- ตารางรายการภาระงาน -->
+                        <div class="table-card">
+                            <h3 style="margin-bottom: 16px; font-size: 1.1rem; color: #0f172a;">📋 รายการภาระงานทั้งหมดในวิชานี้</h3>
+                            <div class="table-wrapper">
+                                <table class="custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th>รหัสงาน</th>
+                                            <th>ชื่อชิ้นงาน</th>
+                                            <th style="text-align:center;">ประเภทงาน</th>
+                                            <th style="text-align:center;">การส่งงาน</th>
+                                            <th style="text-align:center;">คะแนนเต็ม</th>
+                                            <th>กำหนดส่ง</th>
+                                            <th style="text-align:center;">สถานะ</th>
+                                            <th style="text-align:center;">จัดการ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="assignmentsListBody">
+                                        <tr><td colspan="8" style="text-align:center;">กำลังโหลดรายการงาน...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MENU 4: หน้าให้คะแนน -->
+                    <div id="menuGradingContent" class="content-section">
+                        <div class="section-header-card">
+                            <h2><span>📑</span> ตรวจงานและบันทึกคะแนน</h2>
+                        </div>
+
+                        <!-- ตัวเลือกภาระงานที่จะตรวจ -->
+                        <div class="form-card" style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 260px;">
+                                <label for="gradingAssignmentSelect">📝 เลือกภาระงาน / ชิ้นงานที่ต้องการตรวจ</label>
+                                <select id="gradingAssignmentSelect" class="custom-select" onchange="handleGradingAssignmentChange()">
+                                    <option value="">-- กรุณาเลือกภาระงาน --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <button type="button" class="btn-submit-form" onclick="saveAllScores()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 12px rgba(16,185,129,0.3); padding: 12px 20px; white-space: nowrap;">
+                                    💾 บันทึกคะแนนทั้งหมดในหน้านี้
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ตารางส่งงาน -->
+                        <div class="table-card">
+                            <div class="table-wrapper">
+                                <table class="custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:60px; text-align:center;">เลขที่</th>
+                                            <th>รหัสนักเรียน</th>
+                                            <th>ชื่อ - นามสกุล</th>
+                                            <th>วันเวลาที่ส่ง</th>
+                                            <th>ไฟล์งาน / ลิงก์งาน</th>
+                                            <th style="text-align:center;">สถานะการส่งงาน</th>
+                                            <th style="text-align:center;">ให้คะแนน</th>
+                                            <th style="text-align:center;">จัดการ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="submissionsTableBody">
+                                        <tr><td colspan="8" style="text-align:center;">กรุณาเลือกชิ้นงานด้านบนเพื่อตรวจงาน</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MENU 5: หน้าแบบทดสอบ -->
+                    <div id="menuQuizzesContent" class="content-section">
+                        <div class="section-header-card">
+                            <h2><span>✍️</span> จัดการแบบทดสอบและข้อสอบ</h2>
+                        </div>
+
+                        <!-- ฟอร์มสร้างแบบทดสอบ -->
+                        <div class="form-card">
+                            <h3 style="margin-bottom: 16px; font-size: 1.1rem; color: #0f172a;">➕ สร้างชุดแบบทดสอบใหม่</h3>
+                            <form id="createQuizForm" onsubmit="handleCreateQuiz(event)">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="quizTitle">📌 หัวข้อแบบทดสอบ</label>
+                                        <input type="text" id="quizTitle" class="custom-input" placeholder="เช่น แบบทดสอบท้ายบทที่ 1" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="quizTime">⏱️ เวลาทำ (นาที)</label>
+                                        <input type="number" id="quizTime" class="custom-input" placeholder="15" value="15" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="quizPassScore">🎯 คะแนนผ่านเกณฑ์</label>
+                                        <input type="number" id="quizPassScore" class="custom-input" placeholder="6" value="6" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-submit-form">✍️ บันทึกสร้างชุดแบบทดสอบ</button>
+                            </form>
+                        </div>
+
+                        <!-- ตารางรายการแบบทดสอบ -->
+                        <div class="table-card">
+                            <h3 style="margin-bottom: 16px; font-size: 1.1rem; color: #0f172a;">📋 รายการแบบทดสอบประจำวิชา</h3>
+                            <div class="table-wrapper">
+                                <table class="custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ชื่อชุดแบบทดสอบ</th>
+                                            <th style="text-align:center;">เวลาทำ</th>
+                                            <th style="text-align:center;">เกณฑ์ผ่าน</th>
+                                            <th style="text-align:center;">สถานะ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="quizListBody">
+                                        <tr>
+                                            <td>แบบทดสอบที่ 1 ความรู้พื้นฐานคอมพิวเตอร์</td>
+                                            <td style="text-align:center;">15 นาที</td>
+                                            <td style="text-align:center;">6/10 คะแนน</td>
+                                            <td style="text-align:center;"><span class="badge-status success">เปิดใช้งาน</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingUI">
+        <div class="cute-spinner"></div>
+        <p id="loadingText" style="margin-top:14px; font-weight:700; font-size:1.1rem;">กำลังโหลดข้อมูล...</p>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // ⚙️ ตั้งค่า Web App URL ที่ได้จากการ Deploy ใน Google Apps Script (นำ URL ของคุณครูมาใส่ตรงนี้เมื่อนำขึ้น GitHub Pages)
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxYaznWz2NvtG5JAuzm6a48FgbyRCe8lUW6DFYzv97Oi9TY8l_pYyAZcRkGjAu6dJp7/exec';
+
+        const API_URL = (window.location.href.includes('script.google.com'))
+            ? window.location.href.split('?')[0]
+            : GAS_WEB_APP_URL;
+
+        function goToPage(pageName) {
+            const isAppsScript = window.location.href.includes('script.google.com');
+            if (isAppsScript) {
+                const baseUrl = window.location.href.split('?')[0];
+                const cleanPage = pageName.replace('.html', '');
+                if (cleanPage === 'index') {
+                    window.location.href = baseUrl;
+                } else {
+                    window.location.href = baseUrl + '?page=' + cleanPage;
+                }
+            } else {
+                if (!pageName.endsWith('.html')) pageName += '.html';
+                window.location.href = pageName;
+            }
+        }
+
+        let allSubjects = [];
+        let currentSubject = null;
+        let currentAssignments = [];
+        let currentSubmissions = [];
+
+        // 1. เปิดหน้าเว็บแล้วโหลดข้อมูลตั้งต้น
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTeacherInfo();
+            fetchSubjects();
+        });
+
+        // ดึงชื่อครูผู้สอน
+        function loadTeacherInfo() {
+            try {
+                const teacherDataStr = localStorage.getItem('teacherData');
+                if (teacherDataStr) {
+                    const teacher = JSON.parse(teacherDataStr);
+                    const name = teacher.Name_Surname || teacher.name || '';
+                    if (name && name !== 'ครูผู้สอน' && name !== 'คุณครูผู้สอน') {
+                        document.getElementById('teacherNameDisplay').textContent = name;
+                        return; // อ่านจาก localStorage ได้ทันทีแบบ 0ms ไม่ต้องยิงเน็ตเพิ่ม
+                    }
+                }
+            } catch(e) {}
+
+            // Fallback หากไม่มีข้อมูลใน localStorage ให้ดึงใน background
+            fetch(`${API_URL}?action=getTeachers`, { method: 'GET', redirect: 'follow' })
+                .then(r => r.json())
+                .then(result => {
+                    const teachers = (result && (result.data || Array.isArray(result))) ? (result.data || result) : [];
+                    if (Array.isArray(teachers) && teachers.length > 0) {
+                        const matchedTeacher = teachers[0];
+                        const sheetName = matchedTeacher.Name_Surname || matchedTeacher.name || '';
+                        if (sheetName) {
+                            document.getElementById('teacherNameDisplay').textContent = sheetName;
+                            localStorage.setItem('teacherData', JSON.stringify(matchedTeacher));
+                            return;
+                        }
+                    }
+                    document.getElementById('teacherNameDisplay').textContent = 'คุณครูผู้สอน';
+                })
+                .catch(e => {
+                    document.getElementById('teacherNameDisplay').textContent = 'คุณครูผู้สอน';
+                });
+        }
+
+        // 2. ดึงรายการห้องเรียน / วิชา (action=getSubjects)
+        async function fetchSubjects() {
+            const classCardGrid = document.getElementById('classCardGrid');
+            try {
+                classCardGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: #ffffff; border-radius: 24px;">
+                        <div class="cute-spinner" style="margin: 0 auto 16px auto;"></div>
+                        <p style="font-weight: 700; color: #475569;">กำลังโหลดรายวิชาและห้องเรียนทั้งหมด...</p>
+                    </div>
+                `;
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+                const response = await fetch(`${API_URL}?action=getSubjects`, {
+                    method: 'GET',
+                    redirect: 'follow',
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+
+                let result = await response.json();
+                if (typeof result === 'string') {
+                    try { result = JSON.parse(result); } catch(e) {}
+                }
+
+                if (result && result.status === 'error') {
+                    console.error('Server returned error:', result.message);
+                    classCardGrid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 30px; background: #ffffff; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+                            <p style="color:#ef4444; font-weight:700; font-size:1.1rem; margin-bottom:10px;">❌ เกิดข้อผิดพลาดจากเซิร์ฟเวอร์: ${result.message || 'ไม่สามารถโหลดข้อมูลได้'}</p>
+                            <button type="button" onclick="fetchSubjects()" style="padding:10px 20px; background:#2563eb; color:white; border:none; border-radius:12px; font-weight:700; cursor:pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">🔄 ลองใหม่อีกครั้ง</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                allSubjects = Array.isArray(result) ? result : (result.data || []);
+                renderClassCards(allSubjects);
+            } catch (error) {
+                console.error('Error fetching subjects:', error);
+                const isTimeout = error.name === 'AbortError';
+                classCardGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 30px; background: #ffffff; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+                        <p style="color:#ef4444; font-weight:700; font-size:1.1rem; margin-bottom:8px;">❌ ${isTimeout ? 'หมดเวลาการเชื่อมต่อ (Request Timeout 12s)' : 'ไม่สามารถดึงข้อมูลรายวิชาได้'}</p>
+                        <p style="font-size:0.88rem; color:#64748b; margin-bottom:16px;">โปรดตรวจสอบว่าได้เลือก <strong>"เวอร์ชันใหม่" (New version)</strong> ในการ Deploy Google Apps Script หรือยัง</p>
+                        <button type="button" onclick="fetchSubjects()" style="padding:10px 20px; background:#2563eb; color:white; border:none; border-radius:12px; font-weight:700; cursor:pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">🔄 ลองใหม่อีกครั้ง</button>
+                    </div>
+                `;
+            }
+        }
+
+        // สร้างการ์ดห้องเรียน
+        function renderClassCards(subjects) {
+            const classCardGrid = document.getElementById('classCardGrid');
+            if (!subjects || subjects.length === 0) {
+                classCardGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; background: #ffffff; border-radius: 24px;">
+                        <p style="font-weight:700; color:#64748b;">ไม่พบข้อมูลรายวิชาในระบบ</p>
+                    </div>
+                `;
+                return;
+            }
+
+            classCardGrid.innerHTML = subjects.map((sub, index) => {
+                const subjectId = sub.Subject_ID || sub.id || `SUB${index+1}`;
+                const subjectName = sub.Subject_Name || sub.name || 'รายวิชาเรียน';
+                const room = sub.Room || sub.room || 'ทุกห้องเรียน';
+
+                const safeId = String(subjectId).replace(/'/g, "\\'");
+                const safeName = String(subjectName).replace(/'/g, "\\'");
+                const safeRoom = String(room).replace(/'/g, "\\'");
+
+                return `
+                    <div class="class-card" onclick="selectClassroom(${index})" style="position: relative;">
+                        <button type="button" onclick="deleteSubjectConfirm(event, '${safeId}', '${safeName}', '${safeRoom}')" style="position: absolute; top: 16px; right: 16px; background: #fee2e2; color: #dc2626; border: none; padding: 5px 10px; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 4px; z-index: 10; transition: all 0.2s;" title="ลบห้องเรียน/รายวิชานี้">
+                            🗑️ ลบ
+                        </button>
+                        <div>
+                            <div class="class-card-icon">📖</div>
+                            <span class="class-card-code">${subjectId}</span>
+                            <div class="class-card-title">${subjectName}</div>
+                            <div class="class-card-room">🏫 ห้องเรียน: ${room}</div>
+                        </div>
+                        <button type="button" class="btn-enter-class">
+                            เข้าสู่ห้องเรียน ➔
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // เปิด Modal ยืนยันการลบห้องเรียน / รายวิชา (Cascade Delete + Auto Backup)
+        function deleteSubjectConfirm(event, subjectId, subjectName, room) {
+            if (event) event.stopPropagation();
+
+            document.getElementById('deleteSubjectTargetId').value = subjectId;
+            document.getElementById('deleteSubjectTargetName').value = subjectName;
+            document.getElementById('deleteSubjectTargetRoom').value = room;
+            document.getElementById('deleteSubjectTargetText').textContent = `"${subjectName}" (${room}) [รหัสวิชา: ${subjectId}]`;
+
+            document.getElementById('deleteSubjectModal').style.display = 'flex';
+        }
+
+        function closeDeleteSubjectModal() {
+            document.getElementById('deleteSubjectModal').style.display = 'none';
+        }
+
+        async function handleConfirmDeleteSubject() {
+            const subjectId = document.getElementById('deleteSubjectTargetId').value;
+            const subjectName = document.getElementById('deleteSubjectTargetName').value;
+            const room = document.getElementById('deleteSubjectTargetRoom').value;
+
+            closeDeleteSubjectModal();
+            showLoading(`กำลังสำรองข้อมูลและลบรายวิชา ${subjectName}...`);
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'deleteSubject',
+                        subject_id: subjectId,
+                        room: room
+                    }),
+                    redirect: 'follow'
+                });
+                const result = await response.json();
+                hideLoading();
+
+                if (result && (result.success || result.status === 'success')) {
+                    alert(`🗑️ ลบรายวิชา ${subjectName} (${room}) เรียบร้อยแล้ว!\n(ระบบได้สำรองข้อมูลเก็บไว้ในชีต Backup_Archive เรียบร้อยแล้ว)`);
+                    fetchSubjects();
+                } else {
+                    alert('❌ ลบรายวิชาไม่สำเร็จ: ' + (result.message || 'เกิดข้อผิดพลาด'));
+                }
+            } catch(err) {
+                hideLoading();
+                alert('❌ ไม่สามารถติดต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง');
+            }
+        }
+
+        // ฟังก์ชันดาวน์โหลดสำรองข้อมูลระบบ (Manual Backup JSON)
+        async function downloadSystemBackup() {
+            showLoading('กำลังเตรียมข้อมูลสำรองระบบ (Backup)...');
+            try {
+                const response = await fetch(`${API_URL}?action=backupSystemData`);
+                const result = await response.json();
+                hideLoading();
+                if (result && result.success) {
+                    const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `SmartClassroom_Backup_${new Date().toISOString().slice(0,10)}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    alert('📦 สำรองข้อมูลระบบเรียบร้อยแล้ว!');
+                } else {
+                    alert('❌ ไม่สามารถสำรองข้อมูลได้: ' + (result.message || 'เกิดข้อผิดพลาด'));
+                }
+            } catch(e) {
+                hideLoading();
+                console.error('Backup error:', e);
+                alert('❌ ไม่สามารถติดต่อเซิร์ฟเวอร์ได้');
+            }
+        }
+
+        // 3. เมื่อเลือกห้องเรียน
+        function selectClassroom(index) {
+            currentSubject = allSubjects[index];
+            if (!currentSubject) return;
+
+            const subjectId = currentSubject.Subject_ID || currentSubject.id || '';
+            const subjectName = currentSubject.Subject_Name || currentSubject.name || '';
+            const room = currentSubject.Room || currentSubject.room || '';
+
+            document.getElementById('sidebarClassName').textContent = `${subjectName} (${room})`;
+            document.getElementById('sidebarClassCode').textContent = `รหัสวิชา: ${subjectId}`;
+
+            // สลับหน้า View
+            document.getElementById('classSelectionView').style.display = 'none';
+            document.getElementById('workspaceView').style.display = 'block';
+
+            // เริ่มต้นที่เมนูสถิติ
+            switchSidebarMenu('stats');
+        }
+
+        // กลับไปหน้าเลือกห้อง
+        function returnToClassSelection() {
+            currentSubject = null;
+            document.getElementById('workspaceView').style.display = 'none';
+            document.getElementById('classSelectionView').style.display = 'block';
+        }
+
+        // 4. สลับเมนูด้านซ้าย 6 เมนู
+        function switchSidebarMenu(menuKey) {
+            // ปลด active ปุ่มเดิมทั้งหมด
+            const menuBtns = ['Stats', 'Students', 'Assignments', 'Grading', 'Quizzes'];
+            menuBtns.forEach(key => {
+                const btn = document.getElementById(`menuBtn${key}`);
+                const content = document.getElementById(`menu${key}Content`);
+                if (btn) btn.classList.remove('active');
+                if (content) content.classList.remove('active');
+            });
+
+            // active ปุ่มใหม่
+            const capitalKey = menuKey.charAt(0).toUpperCase() + menuKey.slice(1);
+            const activeBtn = document.getElementById(`menuBtn${capitalKey}`);
+            const activeContent = document.getElementById(`menu${capitalKey}Content`);
+
+            if (activeBtn) activeBtn.classList.add('active');
+            if (activeContent) activeContent.classList.add('active');
+
+            // โหลดข้อมูลประจำเมนู
+            if (menuKey === 'stats') loadClassStats();
+            else if (menuKey === 'students') loadClassStudents();
+            else if (menuKey === 'assignments') loadAssignments();
+            else if (menuKey === 'grading') loadGradingAssignments();
+        }
+
+        // --- MENU 1: โหลดสถิติ ---
+        async function loadClassStats() {
+            if (!currentSubject) return;
+            const room = currentSubject.Room || currentSubject.room || '';
+            const subjectId = currentSubject.Subject_ID || currentSubject.id || '';
+
+            const tbody = document.getElementById('statsTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">กำลังโหลดข้อมูลสถิติ...</td></tr>';
+
+            try {
+                const response = await fetch(`${API_URL}?action=getClassStats&room=${encodeURIComponent(room)}&subject_id=${encodeURIComponent(subjectId)}`);
+                const result = await response.json();
+
+                if (result && result.success) {
+                    const summary = result.summary || {};
+                    document.getElementById('kpiTotalStudents').textContent = `${summary.totalStudents || 0} คน`;
+                    document.getElementById('kpiAvgScore').textContent = summary.averageScore || '0.0';
+                    document.getElementById('kpiSubmissionRate').textContent = `${summary.submissionRate || 0}%`;
+                    document.getElementById('kpiPendingStudents').textContent = `${summary.pendingStudents || 0} คน`;
+
+                    const students = result.students || [];
+                    if (students.length > 0) {
+                        tbody.innerHTML = students.map(s => `
+                            <tr>
+                                <td style="text-align:center; font-weight:700;">${s.no || '-'}</td>
+                                <td><code style="background:#eff6ff; padding:2px 6px; border-radius:6px; color:#2563eb;">${s.student_id}</code></td>
+                                <td><strong>${s.name}</strong></td>
+                                <td style="text-align:center;">${s.submittedCount}/${summary.totalTasks || 0} งาน</td>
+                                <td style="text-align:center; font-weight:700; color:#2563eb;">${s.totalScore} คะแนน</td>
+                                <td style="text-align:center;">
+                                    <span class="badge-status ${s.submittedCount >= summary.totalTasks ? 'success' : 'pending'}">
+                                        ${s.submittedCount >= summary.totalTasks ? 'ส่งครบแล้ว' : 'ค้างส่งงาน'}
+                                    </span>
+                                </td>
+                            </tr>
+                        `).join('');
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">ไม่พบข้อมูลสถิตินักเรียนในห้องนี้</td></tr>';
+                    }
+                }
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#ef4444;">เกิดข้อผิดพลาดในการโหลดสถิติ</td></tr>';
+            }
+        }
+
+        // --- MENU 2: โหลดรายชื่อนักเรียน ---
+        async function loadClassStudents() {
+            if (!currentSubject) return;
+            const room = currentSubject.Room || currentSubject.room || '';
+            const tbody = document.getElementById('studentsTableBody');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">กำลังโหลดรายชื่อนักเรียน...</td></tr>';
+
+            try {
+                const response = await fetch(`${API_URL}?action=getStudents&room=${encodeURIComponent(room)}`);
+                const result = await response.json();
+                const students = Array.isArray(result) ? result : (result.data || []);
+
+                document.getElementById('studentCountBadge').textContent = `รวม ${students.length} คน`;
+
+                if (students.length > 0) {
+                    tbody.innerHTML = students.map(s => {
+                        const rawId = s.Student_ID || s.id || '';
+                        const formattedId = String(rawId).padStart(5, '0');
+                        const name = s.Name_Surname || s.name || '';
+                        const pin = s.PIN || s.pin || '1234';
+                        const safeName = name.replace(/'/g, "\\'");
+                        const safeId = String(rawId).replace(/'/g, "\\'");
+                        const safePin = String(pin).replace(/'/g, "\\'");
+
+                        return `
+                            <tr>
+                                <td style="text-align:center; font-weight:700;">${s.No || s.no || '-'}</td>
+                                <td><code style="background:#eff6ff; padding:2px 8px; border-radius:6px; color:#2563eb; font-weight:700;">${formattedId}</code></td>
+                                <td><strong>${name}</strong></td>
+                                <td style="text-align:center;"><code style="background:#f1f5f9; padding:2px 8px; border-radius:6px; color:#475569; font-weight:700;">🔑 ${pin}</code></td>
+                                <td style="text-align:center;">
+                                    <div style="display:flex; gap:6px; justify-content:center;">
+                                        <button type="button" onclick="resetStudentPinPrompt('${safeId}', '${safeName}', '${safePin}')" style="background:#e0f2fe; color:#0284c7; border:none; padding:5px 12px; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer;" title="รีเซ็ตรหัสผ่าน PIN">
+                                            🔑 รี PIN
+                                        </button>
+                                        <button type="button" onclick="deleteStudentConfirm('${safeId}', '${safeName}')" style="background:#fee2e2; color:#dc2626; border:none; padding:5px 12px; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer;" title="ลบนักเรียน">
+                                            🗑️ ลบ
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">ไม่พบรายชื่อนักเรียนในห้องนี้</td></tr>';
+                }
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#ef4444;">เกิดข้อผิดพลาดในการโหลดรายชื่อนักเรียน</td></tr>';
+            }
+        }
+
+        // เปิด Modal เพิ่มรายวิชา/ห้องเรียนใหม่
+        async function openAddSubjectModal() {
+            document.getElementById('newSubjectId').value = '';
+            document.getElementById('newSubjectName').value = '';
+            const roomInput = document.getElementById('newSubjectRoom');
+            if (roomInput) roomInput.value = '';
+
+                customOpt.textContent = '➕ พิมพ์ชื่อห้องเรียนใหม่...';
+                roomSelect.appendChild(customOpt);
+            }
+
+            document.getElementById('addSubjectModal').style.display = 'flex';
+        }
+
+        function handleNewSubjectRoomSelectChange(selectEl) {
+            const val = selectEl.value;
+            const roomInput = document.getElementById('newSubjectRoom');
+            if (val && val !== '__CUSTOM__') {
+                roomInput.value = val;
+            } else if (val === '__CUSTOM__') {
+                roomInput.value = '';
+                if (roomInput) roomInput.focus();
+            }
+        }
+
+        function closeAddSubjectModal() {
+            document.getElementById('addSubjectModal').style.display = 'none';
+        }
+
+        // บันทึกเพิ่มรายวิชา/ห้องเรียนใหม่
+        async function handleAddSubject(e) {
+            e.preventDefault();
+            const subjectId = document.getElementById('newSubjectId').value.trim();
+            const subjectName = document.getElementById('newSubjectName').value.trim();
+            const room = document.getElementById('newSubjectRoom').value.trim();
+
+            if (!subjectId || !subjectName || !room) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วนทุกช่องครับ');
+                return;
+            }
+
+            closeAddSubjectModal();
+            showLoading('กำลังเพิ่มรายวิชา/ห้องเรียนใหม่...');
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'addSubject',
+                        subject_id: subjectId,
+                        subject_name: subjectName,
+                        room: room
+                    }),
+                    redirect: 'follow'
+                });
+                const result = await response.json();
+                hideLoading();
+
+                if (result && (result.success || result.status === 'success')) {
+                    alert(`🎉 ${result.message || 'เพิ่มรายวิชา/ห้องเรียนเรียบร้อยแล้ว!'}`);
+                    fetchSubjects();
+                } else {
+                    alert('❌ เพิ่มไม่สำเร็จ: ' + (result.message || 'เกิดข้อผิดพลาด'));
+                }
+            } catch(err) {
+                hideLoading();
+                alert('❌ ไม่สามารถติดต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง');
+            }
+        }
+
+        // เปิด Modal เพิ่มนักเรียน
+        function openAddStudentModal() {
+            const roomSelect = document.getElementById('newStudentRoomSelect');
+            if (roomSelect) {
+                roomSelect.innerHTML = '<option value="">-- กรุณาเลือกห้องเรียน --</option>';
+                const roomSet = new Set();
+                if (Array.isArray(allSubjects)) {
+                    allSubjects.forEach(s => {
+                        const r = s.Room || s.room || '';
+                        if (r) roomSet.add(r);
+                    });
+                }
+
+                const currentRoom = currentSubject ? (currentSubject.Room || currentSubject.room || '') : '';
+
+                roomSet.forEach(r => {
+                    const opt = document.createElement('option');
+                    opt.value = r;
+                    opt.textContent = `🏫 ห้องเรียน: ${r}`;
+                    if (currentRoom && r === currentRoom) {
+                        opt.selected = true;
+                    }
+                    roomSelect.appendChild(opt);
+                });
+            }
+            
+            document.getElementById('newStudentId').value = '';
+            document.getElementById('newStudentName').value = '';
+            document.getElementById('newStudentNo').value = '';
+            document.getElementById('newStudentPin').value = '1234';
+
+            document.getElementById('addStudentModal').style.display = 'flex';
+        }
+
+        function closeAddStudentModal() {
+            document.getElementById('addStudentModal').style.display = 'none';
+        }
+
+        // บันทึกเพิ่มนักเรียนใหม่
+        async function handleAddStudent(e) {
+            e.preventDefault();
+            const roomSelect = document.getElementById('newStudentRoomSelect');
+            const room = roomSelect ? roomSelect.value.trim() : '';
+            const studentId = document.getElementById('newStudentId').value.trim();
+            const studentName = document.getElementById('newStudentName').value.trim();
+            const studentNo = document.getElementById('newStudentNo').value.trim();
+            const studentPin = document.getElementById('newStudentPin').value.trim() || '1234';
+
+            if (!room) {
+                alert('กรุณาเลือกห้องเรียนก่อนบันทึกครับ');
+                return;
+            }
+
+            if (!studentId || !studentName) {
+                alert('กรุณากรอกรหัสนักเรียนและชื่อ-นามสกุลให้ครบถ้วน');
+                return;
+            }
+
+            closeAddStudentModal();
+            showLoading('กำลังเพิ่มนักเรียนใหม่ลงในระบบ...');
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'addStudent',
+                        student_id: studentId,
+                        name_surname: studentName,
+                        no: studentNo,
+                        pin: studentPin,
+                        room: room
+                    }),
+                    redirect: 'follow'
+                });
+                const result = await response.json();
+                hideLoading();
+
+                if (result && (result.success || result.status === 'success')) {
+                    alert(`🎉 เพิ่มนักเรียนใหม่เข้าห้อง "${room}" เรียบร้อยแล้ว!`);
+                    if (document.getElementById('menuStudentsContent') && document.getElementById('menuStudentsContent').classList.contains('active')) {
+                        loadClassStudents();
+                    }
+                } else {
+                    alert('❌ เพิ่มนักเรียนไม่สำเร็จ: ' + (result.message || 'เกิดข้อผิดพลาด'));
+                }
+            } catch(err) {
+                hideLoading();
+                alert('❌ ไม่สามารถติดต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง');
+            }
+        }
+
+        // เปิด Modal รีเซ็ตรหัส PIN นักเรียน
+        function resetStudentPinPrompt(studentId, studentName, oldPin) {
+            document.getElementById('resetPinStudentId').value = studentId;
+            document.getElementById('resetPinStudentName').textContent = `${studentName} (รหัส ${studentId})`;
+            document.getElementById('resetPinInput').value = oldPin || '1234';
+            document.getElementById('resetPinModal').style.display = 'flex';
+        }
+
+        function closeResetPinModal() {
+            document.getElementById('resetPinModal').style.display = 'none';
+        }
+
+        async function handleConfirmResetPin(e) {
+            e.preventDefault();
+            const studentId = document.getElementById('resetPinStudentId').value;
+            const studentName = document.getElementById('resetPinStudentName').textContent;
+            const cleanPin = document.getElementById('resetPinInput').value.trim();
+
+            if (!cleanPin || cleanPin.length !== 4 || isNaN(cleanPin)) {
+                alert('⚠️ กรุณาระบุรหัส PIN เป็นตัวเลข 4 หลักเท่านั้น (เช่น 1234)');
+                return;
+            }
+
+            closeResetPinModal();
+            showLoading(`กำลังรีเซ็ตรหัส PIN...`);
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'resetStudentPin',
+                        student_id: studentId,
+                        pin: cleanPin
+                    }),
+                    redirect: 'follow'
+                });
+                const result = await response.json();
+                hideLoading();
+
+                if (result && (result.success || result.status === 'success')) {
+                    alert(`✅ รีเซ็ตรหัส PIN ของ ${studentName} เป็น "${cleanPin}" เรียบร้อยแล้ว!`);
+                    loadClassStudents();
+                } else {
+                    alert('❌ รีเซ็ตรหัสไม่สำเร็จ: ' + (result.message || 'เกิดข้อผิดพลาด'));
+                }
+            } catch(err) {
+                hideLoading();
+                alert('❌ ไม่สามารถติดต่อเซิร์ฟเวอร์ได้');
+            }
+        }
+
+        // เปิด Modal ลบนักเรียน
+        function deleteStudentConfirm(studentId, studentName) {
+            document.getElementById('deleteStudentTargetId').value = studentId;
+            document.getElementById('deleteStudentTargetName').textContent = `${studentName} (รหัส ${studentId})`;
+            document.getElementById('deleteStudentModal').style.display = 'flex';
+        }
+
+        function closeDeleteStudentModal() {
+            document.getElementById('deleteStudentModal').style.display = 'none';
+        }
+
+        async function handleConfirmDeleteStudent() {
+            const studentId = document.getElementById('deleteStudentTargetId').value;
+            const studentName = document.getElementById('deleteStudentTargetName').textContent;
+
+            closeDeleteStudentModal();
+            showLoading(`กำลังลบข้อมูล...`);
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'deleteStudent',
+                        student_id: studentId
+                    }),
+                    redirect: 'follow'
+                });
+                const result = await response.json();
+                hideLoading();
+
+                if (result && (result.success || result.status === 'success')) {
+                    alert(`🗑️ ลบข้อมูล ${studentName} เรียบร้อยแล้ว`);
+                    loadClassStudents();
+                } else {
+                    alert('❌ ลบไม่สำเร็จ: ' + (result.message || 'เกิดข้อผิดพลาด'));
+                }
+            } catch(err) {
+                hideLoading();
+                alert('❌ ไม่สามารถติดต่อเซิร์ฟเวอร์ได้');
+            }
+        }
+
+        // --- MENU 3: โหลดภาระงาน ---
+        // แปลงฟอร์แมตวันที่เป็นไทย (เช่น 11 ก.ย. 2569)
+        function formatThaiDate(dateStr) {
+            if (!dateStr || dateStr === 'ไม่ได้กำหนด' || dateStr === 'ไม่กำหนด') return 'ไม่ได้กำหนด';
+            try {
+                const d = new Date(dateStr);
+                if (isNaN(d.getTime())) return dateStr;
+                const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+                return `${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear() + 543}`;
+            } catch(e) {
+                return dateStr;
+            }
+        }
+
+        // แปลงวันเวลาที่ส่งเป็นภาษาไทย (เช่น 12 ก.ย. 2569 17:30 น.)
+        function formatThaiDateTime(dateStr) {
+            if (!dateStr || dateStr === '-' || dateStr === 'ไม่ระบุ') return '-';
+            try {
+                const d = new Date(dateStr);
+                if (isNaN(d.getTime())) return dateStr;
+                const thaiMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+                const day = d.getDate();
+                const month = thaiMonths[d.getMonth()];
+                const year = d.getFullYear() + 543;
+                const hours = String(d.getHours()).padStart(2, '0');
+                const minutes = String(d.getMinutes()).padStart(2, '0');
+                return `${day} ${month} ${year} ${hours}:${minutes} น.`;
+            } catch(e) {
+                return dateStr;
+            }
+        }
+
+        function toggleTeacherDriveLinkInput() {
+            const radio = document.querySelector('input[name="assignSubmissionType"]:checked');
+            const linkGroup = document.getElementById('teacherDriveLinkGroup');
+            if (linkGroup && radio) {
+                linkGroup.style.display = radio.value.includes('ลิงก์') ? 'block' : 'none';
+            }
+        }
+
+        // --- MENU 3: โหลดภาระงาน ---
+        async function loadAssignments() {
+            if (!currentSubject) return;
+            const subjectId = currentSubject.Subject_ID || currentSubject.id || '';
+            const room = currentSubject.Room || currentSubject.room || '';
+            const tbody = document.getElementById('assignmentsListBody');
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">กำลังโหลดรายการภาระงาน...</td></tr>';
+
+            try {
+                const response = await fetch(`${API_URL}?action=getAssignments&subject_id=${encodeURIComponent(subjectId)}&room=${encodeURIComponent(room)}`);
+                const result = await response.json();
+                currentAssignments = Array.isArray(result) ? result : (result.data || []);
+
+                if (currentAssignments.length > 0) {
+                    tbody.innerHTML = currentAssignments.map(a => {
+                        const taskType = a.Task_Type || a.task_type || 'เดี่ยว';
+                        const subType = String(a.Submission_Type || a.submission_type || 'รูปภาพ/ไฟล์');
+                        const formattedDueDate = formatThaiDate(a.Due_Date || a.due_date);
+                        const safeTitle = String(a.Task_Name || a.title || '').replace(/'/g, "\\'");
+                        const safeTaskId = String(a.Task_ID || a.id || '').replace(/'/g, "\\'");
+
+                        return `
+                            <tr>
+                                <td><code style="background:#eff6ff; padding:2px 6px; border-radius:6px; color:#2563eb;">${a.Task_ID || a.id}</code></td>
+                                <td><strong>${a.Task_Name || a.title}</strong></td>
+                                <td style="text-align:center;">
+                                    <span class="badge-status ${taskType === 'กลุ่ม' ? 'pending' : 'active'}">
+                                        ${taskType === 'กลุ่ม' ? '👥 งานกลุ่ม' : '👤 งานเดี่ยว'}
+                                    </span>
+                                </td>
+                                <td style="text-align:center;">
+                                    <span class="badge-status success">
+                                        ${subType.includes('ลิงก์') ? '🔗 ลิงก์ Drive' : '📷 รูปภาพ/ไฟล์'}
+                                    </span>
+                                </td>
+                                <td style="text-align:center; font-weight:700; color:#16a34a;">${a.Max_Score || 10} คะแนน</td>
+                                <td>${formattedDueDate}</td>
+                                <td style="text-align:center;"><span class="badge-status active">กำลังเปิดรับงาน</span></td>
+                                <td style="text-align:center;">
+                                    <button type="button" class="btn-submit-form" style="background:#ef4444; box-shadow:0 4px 0 #b91c1c; padding:6px 12px; font-size:0.85rem;" onclick="deleteAssignment('${safeTaskId}', '${safeTitle}')">🗑️ ลบ</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">ยังไม่มีภาระงานที่สั่งในวิชานี้</td></tr>';
+                }
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#ef4444;">ไม่พบรายการภาระงาน</td></tr>';
+            }
+        }
+
+        // เปิด Modal ลบชิ้นงาน
+        function deleteAssignment(taskId, taskName) {
+            document.getElementById('deleteAssignmentTargetId').value = taskId;
+            document.getElementById('deleteAssignmentTargetTitle').textContent = `"${taskName}" (รหัส ${taskId})`;
+            document.getElementById('deleteAssignmentModal').style.display = 'flex';
+        }
+
+        function closeDeleteAssignmentModal() {
+            document.getElementById('deleteAssignmentModal').style.display = 'none';
+        }
+
+        async function handleConfirmDeleteAssignment() {
+            const taskId = document.getElementById('deleteAssignmentTargetId').value;
+
+            closeDeleteAssignmentModal();
+            showLoading('กำลังลบชิ้นงานและย้ายโฟลเดอร์ใน Drive ลงถังขยะ...');
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'deleteAssignment', task_id: taskId }),
+                    redirect: 'follow'
+                });
+                const result = await response.json();
+                if (result && (result.success || result.status === 'success')) {
+                    alert(`🎉 ${result.message || 'ลบชิ้นงานสำเร็จ!'}`);
+                    loadAssignments();
+                } else {
+                    alert(`❌ ${result.message || 'เกิดข้อผิดพลาดในการลบชิ้นงาน'}`);
+                }
+            } catch(e) {
+                console.error('Error deleting assignment:', e);
+                alert('❌ เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // สร้างงานใหม่
+        async function handleCreateAssignment(e) {
+            e.preventDefault();
+            if (!currentSubject) {
+                alert('กรุณาเลือกวิชาและห้องเรียนก่อนสั่งงานครับ');
+                return;
+            }
+
+            const title = document.getElementById('assignTitle').value;
+            const maxScore = document.getElementById('assignMaxScore').value;
+            const dueDate = document.getElementById('assignDueDate').value;
+            const detail = document.getElementById('assignDetail').value;
+
+            const taskTypeEl = document.querySelector('input[name="assignTaskType"]:checked');
+            const subTypeEl = document.querySelector('input[name="assignSubmissionType"]:checked');
+
+            const taskType = taskTypeEl ? taskTypeEl.value : 'เดี่ยว';
+            const submissionType = subTypeEl ? subTypeEl.value : 'รูปภาพ/ไฟล์';
+
+            const driveLinkEl = document.getElementById('assignDriveLink');
+            const driveLink = driveLinkEl ? driveLinkEl.value : '';
+
+            const subjectId = currentSubject.Subject_ID || currentSubject.id || '';
+            const room = currentSubject.Room || currentSubject.room || '';
+
+            showLoading('กำลังสร้างภาระงานใหม่และจัดเตรียมโฟลเดอร์ใน Google Drive...');
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'createAssignment',
+                        subject_id: subjectId,
+                        room: room,
+                        task_name: title,
+                        task_type: taskType,
+                        submission_type: submissionType,
+                        max_score: Number(maxScore),
+                        due_date: dueDate,
+                        detail: detail,
+                        drive_link: driveLink
+                    }),
+                    redirect: 'follow'
+                });
+
+                const result = await response.json();
+                if (result && (result.success || result.status === 'success')) {
+                    alert(`🎉 ${result.message || 'สร้างภาระงานใหม่สำเร็จ!'}`);
+                    document.getElementById('createAssignmentForm').reset();
+                    if (typeof toggleTeacherDriveLinkInput === 'function') toggleTeacherDriveLinkInput();
+                    loadAssignments();
+                } else {
+                    alert(`❌ ${result.message || 'เกิดข้อผิดพลาดในการสร้างภาระงาน'}`);
+                }
+            } catch (err) {
+                console.error('Error creating assignment:', err);
+                alert('❌ เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // --- MENU 4: หน้าให้คะแนน ---
+        async function loadGradingAssignments() {
+            if (!currentSubject) return;
+            const subjectId = currentSubject.Subject_ID || currentSubject.id || '';
+            const room = currentSubject.Room || currentSubject.room || '';
+            const select = document.getElementById('gradingAssignmentSelect');
+            select.innerHTML = '<option value="">-- กำลังโหลดภาระงาน... --</option>';
+
+            try {
+                const response = await fetch(`${API_URL}?action=getAssignments&subject_id=${encodeURIComponent(subjectId)}&room=${encodeURIComponent(room)}`);
+                const result = await response.json();
+                currentAssignments = Array.isArray(result) ? result : (result.data || []);
+
+                if (currentAssignments.length > 0) {
+                    select.innerHTML = '<option value="">-- กรุณาเลือกภาระงาน --</option>' + 
+                        currentAssignments.map(a => `<option value="${a.Task_ID || a.id}">${a.Task_Name || a.title}</option>`).join('');
+                } else {
+                    select.innerHTML = '<option value="">-- ไม่พบภาระงานในวิชานี้ --</option>';
+                }
+            } catch (e) {
+                select.innerHTML = '<option value="">-- เกิดข้อผิดพลาดในการโหลดภาระงาน --</option>';
+            }
+        }
+
+        async function handleGradingAssignmentChange() {
+            const taskId = document.getElementById('gradingAssignmentSelect').value;
+            const tbody = document.getElementById('submissionsTableBody');
+
+            if (!taskId) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">กรุณาเลือกชิ้นงานด้านบนเพื่อตรวจงาน</td></tr>';
+                return;
+            }
+
+            if (!currentSubject) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#ef4444;">กรุณาเลือกห้องเรียนก่อนครับ</td></tr>';
+                return;
+            }
+
+            const room = currentSubject.Room || currentSubject.room || '';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">กำลังโหลดรายชื่อนักเรียนและรายการส่งงาน...</td></tr>';
+
+            try {
+                const [studentsRes, submissionsRes] = await Promise.all([
+                    fetch(`${API_URL}?action=getStudents&room=${encodeURIComponent(room)}`).then(r => r.json()),
+                    fetch(`${API_URL}?action=getSubmissions&task_id=${encodeURIComponent(taskId)}`).then(r => r.json())
+                ]);
+
+                const students = Array.isArray(studentsRes) ? studentsRes : (studentsRes.data || []);
+                const submissions = Array.isArray(submissionsRes) ? submissionsRes : (submissionsRes.data || []);
+
+                const subMap = new Map();
+                submissions.forEach(sub => {
+                    const sId = String(sub.Student_ID || sub.student_id || '').trim();
+                    if (sId) {
+                        subMap.set(sId, sub);
+                        subMap.set(sId.padStart(5, '0'), sub);
+                        if (!isNaN(sId)) {
+                            subMap.set(String(Number(sId)), sub);
+                        }
+                    }
+                });
+
+                const selectedAssignment = currentAssignments.find(a => String(a.Task_ID || a.id) === String(taskId));
+                const isLinkSubmission = selectedAssignment ? String(selectedAssignment.Submission_Type || selectedAssignment.submission_type || '').includes('ลิงก์') : false;
+
+                if (students.length > 0) {
+                    tbody.innerHTML = students.map((st, index) => {
+                        const rawId = String(st.Student_ID || st.id || st.student_id || '').trim();
+                        const formattedId = rawId.padStart(5, '0');
+                        const numericId = !isNaN(rawId) ? String(Number(rawId)) : rawId;
+                        const no = st.No || st.no || st.number || (index + 1);
+                        const name = st.Name_Surname || st.name || st.student_name || '';
+
+                        const sub = subMap.get(rawId) || subMap.get(formattedId) || subMap.get(numericId);
+                        const isSubmitted = !!sub;
+
+                        let timestamp = '-';
+                        let fileUrl = '';
+                        let score = '';
+
+                        if (sub) {
+                            if (sub.Timestamp || sub.timestamp) {
+                                timestamp = formatThaiDateTime(sub.Timestamp || sub.timestamp);
+                            }
+                            fileUrl = sub.File_URL || sub.fileUrl || sub.url || '';
+                            if (sub.Score !== undefined && sub.Score !== null && sub.Score !== '') {
+                                score = sub.Score;
+                            }
+                        }
+
+                        const isSubLink = isLinkSubmission || (sub && String(sub.Filename || sub.filename || '').includes('Drive'));
+                        const fileBtnText = isSubLink ? '🔗 เปิดดูลิงก์' : '📄 เปิดดูไฟล์';
+
+                        return `
+                            <tr>
+                                <td style="text-align:center; font-weight:700;">${no}</td>
+                                <td><code style="background:#eff6ff; padding:2px 6px; border-radius:6px; color:#2563eb;">${formattedId}</code></td>
+                                <td><strong>${name}</strong></td>
+                                <td>${timestamp}</td>
+                                <td>
+                                    ${fileUrl ? `<a href="${fileUrl}" target="_blank" style="color:#2563eb; font-weight:700; text-decoration:none;">${fileBtnText}</a>` : '-'}
+                                </td>
+                                <td style="text-align:center;">
+                                    <span class="badge-status ${isSubmitted ? 'success' : 'pending'}">
+                                        ${isSubmitted ? '✅ ส่งแล้ว' : '⏳ ยังไม่ส่ง'}
+                                    </span>
+                                </td>
+                                <td style="text-align:center;">
+                                    <input type="number" class="score-input" value="${score}" id="score_${rawId}">
+                                </td>
+                                <td style="text-align:center;">
+                                    <button type="button" class="btn-submit-form" style="padding:6px 12px; font-size:0.85rem;" onclick="saveScore('${rawId}', '${taskId}')">💾 บันทึก</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">ไม่พบรายชื่อนักเรียนในห้องนี้</td></tr>';
+                }
+            } catch (e) {
+                console.error('Error loading grading data:', e);
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#ef4444;">เกิดข้อผิดพลาดในการดึงรายชื่อนักเรียนและรายการส่งงาน</td></tr>';
+            }
+        }
+
+        async function saveScore(studentId, taskId) {
+            const input = document.getElementById(`score_${studentId}`);
+            const score = input ? input.value : 0;
+
+            showLoading('กำลังบันทึกคะแนน...');
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'updateScore', student_id: studentId, task_id: taskId, score: Number(score) }),
+                    redirect: 'follow'
+                });
+                const result = await response.json();
+                if (result && (result.success || result.status === 'success')) {
+                    alert('🎉 บันทึกคะแนนสำเร็จ!');
+                } else {
+                    alert(`❌ ${result.message || 'เกิดข้อผิดพลาดในการบันทึกคะแนน'}`);
+                }
+            } catch(e) {
+                console.error('Error saving score:', e);
+                alert('❌ เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // บันทึกคะแนนทั้งห้องพร้อมกัน
+        async function saveAllScores() {
+            const taskId = document.getElementById('gradingAssignmentSelect').value;
+            if (!taskId) {
+                alert('กรุณาเลือกชิ้นงานก่อนบันทึกคะแนนครับ');
+                return;
+            }
+
+            const inputs = document.querySelectorAll('.score-input');
+            if (!inputs || inputs.length === 0) {
+                alert('ไม่พบรายการคะแนนในตาราง');
+                return;
+            }
+
+            const scoresList = [];
+            inputs.forEach(input => {
+                const sId = input.id.replace('score_', '');
+                const val = input.value;
+                if (sId && val !== '' && val !== null) {
+                    scoresList.push({
+                        student_id: sId,
+                        task_id: taskId,
+                        score: Number(val)
+                    });
+                }
+            });
+
+            if (scoresList.length === 0) {
+                alert('ยังไม่มีการกรอกคะแนน');
+                return;
+            }
+
+            showLoading(`กำลังบันทึกคะแนนนักเรียน ${scoresList.length} คน...`);
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'updateBatchScores', scores: scoresList }),
+                    redirect: 'follow'
+                });
+                const result = await response.json();
+                hideLoading();
+
+                if (result && (result.success || result.status === 'success')) {
+                    alert(`🎉 ${result.message || 'บันทึกคะแนนทั้งหมดเรียบร้อยแล้ว!'}`);
+                } else {
+                    alert('❌ เกิดข้อผิดพลาดในการบันทึกคะแนน');
+                }
+            } catch(e) {
+                hideLoading();
+                console.error('Batch score save error:', e);
+                alert('❌ ไม่สามารถติดต่อเซิร์ฟเวอร์ได้');
+            }
+        }
+
+        // --- MENU 5: หน้าแบบทดสอบ ---
+        function handleCreateQuiz(e) {
+            e.preventDefault();
+            alert('🎉 สร้างชุดแบบทดสอบสำเร็จ!');
+            document.getElementById('createQuizForm').reset();
+        }
+
+        // Export PDF
+        function exportPDF() { window.print(); }
+
+        // Export Excel
+        function exportExcel() {
+            alert('📊 กำลังเตรียมไฟล์ Excel สำหรับดาวน์โหลด...');
+        }
+
+        function showLoading(text) {
+            document.getElementById('loadingText').textContent = text || 'กำลังโหลด...';
+            document.getElementById('loadingUI').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingUI').style.display = 'none';
+        }
+    </script>
+
+    <!-- Modal สำหรับเพิ่มห้องเรียน / รายวิชาใหม่ -->
+    <div id="addSubjectModal" class="loading-overlay" style="display: none;">
+        <div style="background: #ffffff; padding: 28px; border-radius: 20px; width: 90%; max-width: 480px; color: #0f172a; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <span>📖</span> เพิ่มห้องเรียน / รายวิชาใหม่
+                </h3>
+                <button type="button" onclick="closeAddSubjectModal()" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;">&times;</button>
+            </div>
+            <form onsubmit="handleAddSubject(event)">
+                <div style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #334155;">🆔 รหัสวิชา <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="newSubjectId" class="custom-input" placeholder="เช่น CS101 หรือ ว21101" required>
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #334155;">📖 ชื่อรายวิชา <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="newSubjectName" class="custom-input" placeholder="เช่น วิทยาการคำนวณ 1" required>
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #334155;">🏫 เลือกห้องเรียน / ชั้นเรียน <span style="color: #ef4444;">*</span></label>
+                    <select id="newSubjectRoomSelect" class="custom-input" style="margin-bottom: 8px; font-weight: 600;" onchange="handleNewSubjectRoomSelectChange(this)">
+                        <option value="">-- กรุณาเลือกห้องเรียนที่มีในระบบ --</option>
+                    </select>
+                    <input type="text" id="newSubjectRoom" class="custom-input" placeholder="หรือพิมพ์ชื่อห้องเรียนใหม่ (เช่น ม.1/1)" required>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button type="button" onclick="closeAddSubjectModal()" style="padding: 10px 18px; border-radius: 10px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 700; cursor: pointer;">ยกเลิก</button>
+                    <button type="submit" style="padding: 10px 20px; border-radius: 10px; border: none; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(2,132,199,0.3);">💾 บันทึกเพิ่มรายวิชา</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal สำหรับเพิ่มนักเรียนใหม่ (2 โหมด: เพิ่มทีละคน & เพิ่มหลายคนจาก Excel) -->
+    <div id="addStudentModal" class="loading-overlay" style="display: none;">
+        <div style="background: #ffffff; padding: 28px; border-radius: 20px; width: 95%; max-width: 620px; color: #0f172a; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <span>➕</span> เพิ่มนักเรียนใหม่เข้าชั้นเรียน
+                </h3>
+                <button type="button" onclick="closeAddStudentModal()" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;">&times;</button>
+            </div>
+
+            <!-- เลือกระดับชั้น / ห้องเรียน (ใช้ร่วมกันทั้ง 2 โหมด) -->
+            <div style="margin-bottom: 16px; background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <label style="display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #334155;">🏫 เลือกระดับชั้น / ห้องเรียนที่จะเพิ่มนักเรียน <span style="color: #ef4444;">*</span></label>
+                <select id="newStudentRoomSelect" class="custom-input" required style="width: 100%; font-weight: 600; background: #ffffff;">
+                    <option value="">-- กรุณาเลือกห้องเรียน --</option>
+                </select>
+            </div>
+
+            <!-- Tab Selector -->
+            <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                <button type="button" id="tabAddSingleBtn" onclick="switchAddStudentTab('single')" style="padding: 8px 16px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; background: #2563eb; color: white;">👤 เพิ่มทีละคน</button>
+                <button type="button" id="tabAddBulkBtn" onclick="switchAddStudentTab('bulk')" style="padding: 8px 16px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; background: #f1f5f9; color: #64748b;">👥 เพิ่มหลายคน (วางจาก Excel)</button>
+            </div>
+
+            <!-- Tab 1: เพิ่มทีละคน -->
+            <div id="addStudentSingleTab">
+                <form onsubmit="handleAddStudent(event)">
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #334155;">🆔 รหัสนักเรียน <span style="color: #ef4444;">*</span></label>
+                        <input type="text" id="newStudentId" class="custom-input" placeholder="เช่น 6601">
+                    </div>
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #334155;">👤 ชื่อ - นามสกุล <span style="color: #ef4444;">*</span></label>
+                        <input type="text" id="newStudentName" class="custom-input" placeholder="เช่น ด.ช. สมชาย ใจดี">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                        <div>
+                            <label style="display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #334155;">🔢 เลขที่</label>
+                            <input type="number" id="newStudentNo" class="custom-input" placeholder="เช่น 1">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #334155;">🔑 รหัสผ่าน (PIN)</label>
+                            <input type="text" id="newStudentPin" class="custom-input" placeholder="1234" value="1234">
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                        <button type="button" onclick="closeAddStudentModal()" style="padding: 10px 18px; border-radius: 10px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 700; cursor: pointer;">ยกเลิก</button>
+                        <button type="submit" style="padding: 10px 20px; border-radius: 10px; border: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(16,185,129,0.3);">💾 บันทึกเพิ่มนักเรียน</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tab 2: เพิ่มหลายคน (วางจาก Excel) -->
+            <div id="addStudentBulkTab" style="display: none;">
+                <form onsubmit="handleImportBatchStudents(event)">
+                    <div style="margin-bottom: 14px;">
+                        <label style="display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #334155;">📋 วางข้อมูลตารางจาก Excel หรือ CSV <span style="color: #ef4444;">*</span></label>
+                        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 6px;">รองรับรูปแบบ: <strong>เลขที่ [Tab] รหัสนักเรียน [Tab] ชื่อ-นามสกุล</strong> (คัดลอกจาก Excel แล้ววางได้เลย)</div>
+                        <textarea id="bulkStudentsInput" class="custom-input" rows="6" placeholder="ตัวอย่าง:
+1	6601	ด.ช. สมชาย ใจดี
+2	6602	ด.ญ. สมหญิง รักเรียน" oninput="parseBulkStudentsPreview()" style="font-family: monospace; font-size: 0.85rem;"></textarea>
+                    </div>
+
+                    <!-- Preview Table -->
+                    <div style="margin-bottom: 14px;">
+                        <div style="font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 6px;">🔍 แสดงตัวอย่างที่จะนำเข้า (<span id="bulkStudentsCount">0</span> คน):</div>
+                        <div style="max-height: 180px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 10px;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                                <thead>
+                                    <tr style="background: #f1f5f9; text-align: left; color: #475569;">
+                                        <th style="padding: 8px;">เลขที่</th>
+                                        <th style="padding: 8px;">รหัสนักเรียน</th>
+                                        <th style="padding: 8px;">ชื่อ-นามสกุล</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bulkStudentsPreviewBody">
+                                    <tr><td colspan="3" style="text-align: center; color: #94a3b8; padding: 14px;">ยังไม่มีข้อมูล วางตารางข้อมูลด้านบนเพื่อดูตัวอย่าง</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                        <button type="button" onclick="closeAddStudentModal()" style="padding: 10px 18px; border-radius: 10px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 700; cursor: pointer;">ยกเลิก</button>
+                        <button type="submit" id="btnSubmitBulkStudents" disabled style="padding: 10px 20px; border-radius: 10px; border: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(16,185,129,0.3); opacity: 0.6;">💾 บันทึกนำเข้านักเรียนทั้งหมด</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal สำหรับจัดการชั้นเรียน (สร้าง/ลบห้องเรียน) -->
+    <div id="manageRoomsModal" class="loading-overlay" style="display: none;">
+        <div style="background: #ffffff; padding: 28px; border-radius: 20px; width: 90%; max-width: 520px; color: #0f172a; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <span>🏫</span> จัดการชั้นเรียน (เพิ่ม/ลบห้อง)
+                </h3>
+                <button type="button" onclick="closeManageRoomsModal()" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;">&times;</button>
+            </div>
+            
+            <!-- ฟอร์มสร้างห้องเรียนใหม่ -->
+            <form onsubmit="handleCreateRoom(event)" style="margin-bottom: 20px; background: #f8fafc; padding: 16px; border-radius: 14px; border: 1px solid #e2e8f0;">
+                <label style="display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #334155;">➕ สร้างห้องเรียนใหม่</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="newRoomNameInput" class="custom-input" placeholder="เช่น ม.1/1 หรือ ม.6/2" required style="flex: 1;">
+                    <button type="submit" style="padding: 10px 16px; border-radius: 10px; border: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; font-weight: 700; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 12px rgba(16,185,129,0.3);">+ สร้างห้อง</button>
+                </div>
+            </form>
+
+            <!-- รายการห้องเรียนทั้งหมดในระบบ -->
+            <div style="font-size: 0.9rem; font-weight: 700; color: #334155; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                <span>📋 รายการห้องเรียนทั้งหมดในระบบ</span>
+                <button type="button" onclick="loadRoomsList()" style="font-size: 0.8rem; color: #2563eb; background: none; border: none; cursor: pointer; text-decoration: underline;">🔄 รีเฟรช</button>
+            </div>
+
+            <div id="manageRoomsListContainer" style="max-height: 240px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 8px; background: #ffffff;">
+                <div style="text-align: center; color: #94a3b8; padding: 20px;">กำลังโหลดข้อมูล...</div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                <button type="button" onclick="closeManageRoomsModal()" style="padding: 10px 20px; border-radius: 10px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 700; cursor: pointer;">ปิดหน้าต่าง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal สำหรับรีเซ็ตรหัส PIN ของนักเรียน -->
+    <div id="resetPinModal" class="loading-overlay" style="display: none;">
+        <div style="background: #ffffff; padding: 28px; border-radius: 20px; width: 90%; max-width: 420px; color: #0f172a; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <span>🔑</span> รีเซ็ตรหัสผ่าน (PIN) นักเรียน
+                </h3>
+                <button type="button" onclick="closeResetPinModal()" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;">&times;</button>
+            </div>
+            <form onsubmit="handleConfirmResetPin(event)">
+                <input type="hidden" id="resetPinStudentId">
+                <p style="font-size: 0.95rem; color: #475569; margin-bottom: 14px; font-weight: 600;">
+                    นักเรียน: <span id="resetPinStudentName" style="color: #2563eb; font-weight: 700;">-</span>
+                </p>
+                <div style="margin-bottom: 18px;">
+                    <label style="display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #334155;">🔑 ระบุรหัส PIN 4 หลักใหม่ <span style="color: #ef4444;">*</span></label>
+                    <input type="text" id="resetPinInput" class="custom-input" placeholder="เช่น 1234" maxlength="4" pattern="[0-9]*" inputmode="numeric" required style="font-size: 1.2rem; text-align: center; letter-spacing: 4px; font-weight: 700;">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" onclick="closeResetPinModal()" style="padding: 10px 18px; border-radius: 10px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 700; cursor: pointer;">ยกเลิก</button>
+                    <button type="submit" style="padding: 10px 20px; border-radius: 10px; border: none; background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: white; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(2,132,199,0.3);">💾 บันทึกเปลี่ยน PIN</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal สำหรับยืนยันการลบนักเรียน -->
+    <div id="deleteStudentModal" class="loading-overlay" style="display: none;">
+        <div style="background: #ffffff; padding: 28px; border-radius: 20px; width: 90%; max-width: 420px; color: #0f172a; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+            <div style="width: 60px; height: 60px; background: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; font-size: 1.8rem; color: #dc2626;">
+                ⚠️
+            </div>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 8px;">ยืนยันลบข้อมูลนักเรียน</h3>
+            <p style="font-size: 0.95rem; color: #475569; margin-bottom: 20px; line-height: 1.5;">
+                คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลของ <br>
+                <strong id="deleteStudentTargetName" style="color: #dc2626; font-size: 1.05rem;">-</strong> ?
+            </p>
+            <input type="hidden" id="deleteStudentTargetId">
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" onclick="closeDeleteStudentModal()" style="flex: 1; padding: 10px 18px; border-radius: 10px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 700; cursor: pointer;">ยกเลิก</button>
+                <button type="button" onclick="handleConfirmDeleteStudent()" style="flex: 1; padding: 10px 18px; border-radius: 10px; border: none; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(239,68,68,0.3);">🗑️ ยืนยันลบนักเรียน</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal สำหรับยืนยันการลบภาระงาน -->
+    <div id="deleteAssignmentModal" class="loading-overlay" style="display: none;">
+        <div style="background: #ffffff; padding: 28px; border-radius: 20px; width: 90%; max-width: 440px; color: #0f172a; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+            <div style="width: 60px; height: 60px; background: #fee2e2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; font-size: 1.8rem; color: #dc2626;">
+                📝
+            </div>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 8px;">ยืนยันการลบภาระงาน</h3>
+            <p style="font-size: 0.95rem; color: #475569; margin-bottom: 8px; line-height: 1.5;">
+                คุณครูต้องการลบชิ้นงาน <br>
+                <strong id="deleteAssignmentTargetTitle" style="color: #dc2626; font-size: 1.05rem;">-</strong> ใช่หรือไม่?
+            </p>
+            <p style="font-size: 0.82rem; color: #94a3b8; margin-bottom: 20px; background: #f8fafc; padding: 8px; border-radius: 10px; border: 1px dashed #cbd5e1;">
+                * ระบบจะลบประวัติการส่งงานและย้ายโฟลเดอร์ใน Google Drive ไปยังถังขยะ
+            </p>
+            <input type="hidden" id="deleteAssignmentTargetId">
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" onclick="closeDeleteAssignmentModal()" style="flex: 1; padding: 10px 18px; border-radius: 10px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 700; cursor: pointer;">ยกเลิก</button>
+                <button type="button" onclick="handleConfirmDeleteAssignment()" style="flex: 1; padding: 10px 18px; border-radius: 10px; border: none; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(239,68,68,0.3);">🗑️ ยืนยันลบชิ้นงาน</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal สำหรับยืนยันการลบห้องเรียน / รายวิชา (Cascade Delete) -->
+    <div id="deleteSubjectModal" class="loading-overlay" style="display: none;">
+        <div style="background: #ffffff; padding: 28px; border-radius: 20px; width: 90%; max-width: 480px; color: #0f172a; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid #fee2e2; padding-bottom: 12px;">
+                <h3 style="font-size: 1.2rem; font-weight: 700; color: #dc2626; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <span>🚨</span> ยืนยันการลบรายวิชาถาวร (Cascade Delete)
+                </h3>
+                <button type="button" onclick="closeDeleteSubjectModal()" style="background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;">&times;</button>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <p style="font-size: 0.95rem; color: #334155; margin-bottom: 12px;">
+                    คุณแน่ใจหรือไม่ว่าต้องการลบรายวิชา: <br>
+                    <strong id="deleteSubjectTargetText" style="color: #2563eb; font-size: 1.1rem;">-</strong>
+                </p>
+                <div style="background: #fff5f5; border: 1px solid #fecaca; border-radius: 14px; padding: 12px; font-size: 0.85rem; color: #b91c1c; line-height: 1.5; margin-bottom: 12px;">
+                    <strong>⚠️ คำเตือน:</strong> การลบจะทำแบบถาวร (ลบการ์ดวิชา + ภาระงานทั้งหมด + ประวัติการส่งงาน/คะแนน + ย้ายโฟลเดอร์ไฟล์ใน Drive ลงถังขยะ)
+                </div>
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; padding: 12px; font-size: 0.85rem; color: #15803d; line-height: 1.5;">
+                    <strong>📦 อุ่นใจได้:</strong> ระบบได้ทำการสำรองข้อมูลทั้งหมดไว้ในชีต <code>Backup_Archive</code> ให้อัตโนมัติก่อนลบครับ
+                </div>
+            </div>
+            <input type="hidden" id="deleteSubjectTargetId">
+            <input type="hidden" id="deleteSubjectTargetRoom">
+            <input type="hidden" id="deleteSubjectTargetName">
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button type="button" onclick="closeDeleteSubjectModal()" style="padding: 10px 18px; border-radius: 10px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 700; cursor: pointer;">ยกเลิก</button>
+                <button type="button" onclick="handleConfirmDeleteSubject()" style="padding: 10px 20px; border-radius: 10px; border: none; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(239,68,68,0.3);">🗑️ ยืนยันลบถาวร</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
