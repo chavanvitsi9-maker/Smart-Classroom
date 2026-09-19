@@ -664,7 +664,7 @@
                         <label for="pinCode">🔑 2. รหัสผ่านยืนยันตัวตน (PIN)</label>
                         <div style="position: relative;">
                             <input type="password" id="pinCode" class="custom-input" placeholder="กรอกรหัส PIN (เช่น 1234)" maxlength="10" inputmode="numeric" required style="padding-right: 44px;">
-                            <button type="button" onclick="togglePasswordVisibility('pinCode', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 1.15rem; padding: 4px;" title="แสดง/ซ่อนรหัสผ่าน">👁️</button>
+                            <button type="button" onclick="togglePasswordVisibility('pinCode', this)" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 1.15rem; min-width: 40px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;" title="แสดงรหัสผ่าน" aria-label="แสดงรหัสผ่าน" aria-pressed="false" aria-controls="pinCode">👁️</button>
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
                             <span style="font-size: 0.82rem; color: #64748b;">* รหัสเริ่มต้นคือ 1234</span>
@@ -699,7 +699,10 @@
                 <form id="teacherLoginForm">
                     <div class="form-group">
                         <label for="teacherPassword">🔐 รหัสผ่านครูผู้สอน (6 หลัก)</label>
-                        <input type="password" id="teacherPassword" class="custom-input" placeholder="กรอกรหัสผ่าน 6 หลัก" maxlength="6" pattern="[0-9]*" inputmode="numeric" required>
+                        <div style="position: relative;">
+                            <input type="password" id="teacherPassword" class="custom-input" placeholder="กรอกรหัสผ่าน 6 หลัก" maxlength="6" pattern="[0-9]*" inputmode="numeric" required style="padding-right: 44px;">
+                            <button type="button" onclick="togglePasswordVisibility('teacherPassword', this)" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 1.15rem; min-width: 40px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;" title="แสดงรหัสผ่าน" aria-label="แสดงรหัสผ่าน" aria-pressed="false" aria-controls="teacherPassword">👁️</button>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn-form-submit btn-teacher-submit">
@@ -741,7 +744,10 @@
 
                     <div class="form-group">
                         <label for="regTeacherPassword">🔑 2. ตั้งรหัสผ่าน (6 หลัก)</label>
-                        <input type="password" id="regTeacherPassword" class="custom-input" placeholder="กรอกรหัสผ่าน 6 หลัก" maxlength="6" pattern="[0-9]*" inputmode="numeric" required>
+                        <div style="position: relative;">
+                            <input type="password" id="regTeacherPassword" class="custom-input" placeholder="กรอกรหัสผ่าน 6 หลัก" maxlength="6" pattern="[0-9]*" inputmode="numeric" required style="padding-right: 44px;">
+                            <button type="button" onclick="togglePasswordVisibility('regTeacherPassword', this)" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 1.15rem; min-width: 40px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;" title="แสดงรหัสผ่าน" aria-label="แสดงรหัสผ่าน" aria-pressed="false" aria-controls="regTeacherPassword">👁️</button>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -965,13 +971,13 @@
         function togglePasswordVisibility(inputId, btn) {
             const input = document.getElementById(inputId);
             if (!input) return;
-            if (input.type === 'password') {
-                input.type = 'text';
-                btn.textContent = '🙈';
-            } else {
-                input.type = 'password';
-                btn.textContent = '👁️';
-            }
+            const isShowing = input.type === 'text';
+            input.type = isShowing ? 'password' : 'text';
+            btn.textContent = isShowing ? '👁️' : '🙈';
+            const labelText = isShowing ? 'แสดงรหัสผ่าน' : 'ซ่อนรหัสผ่าน';
+            btn.setAttribute('aria-label', labelText);
+            btn.setAttribute('title', labelText);
+            btn.setAttribute('aria-pressed', isShowing ? 'false' : 'true');
         }
 
         async function promptForgotPin() {
