@@ -1139,63 +1139,76 @@
 
         // 2. Realtime Listener ดึงรายการชิ้นงาน, คะแนน และแบบทดสอบจาก Firebase
         function listenToFirebaseDashboard(room = '', studentId = '', subjectId = '') {
-            // ฟังข้อมูล Assignments และ Submissions พร้อมกัน
-            db.ref('Assignments').on('value', (assignmentsSnap) => {
-                db.ref('Submissions').on('value', (submissionsSnap) => {
-                    const assignVal = assignmentsSnap.val() || {};
-                    const subVal = submissionsSnap.val() || {};
+            let latestAssignments = null;
+            let latestSubmissions = null;
 
-                    let assignments = Object.keys(assignVal).map(key => ({
-                        id: key,
-                        Task_ID: key,
-                        Assignment_ID: key,
-                        ...assignVal[key]
-                    })).filter(a => {
-                        const aRoom = String(a.Room || a.room || '').toLowerCase();
-                        const aSub = String(a.Subject_ID || a.subject_id || '').toLowerCase();
-                        const targetRoom = room.toLowerCase();
-                        const targetSub = subjectId.toLowerCase();
-                        
-                        return !targetRoom || !aRoom || aRoom.includes(targetRoom) || targetRoom.includes(aRoom) || aSub.includes(targetSub);
-                    });
+            const updateAssignmentsView = () => {
+                if (latestAssignments === null || latestSubmissions === null) return;
 
-                    // ตรวจสอบการส่งงานของนักเรียนแต่ละชิ้น
-                    assignments = assignments.map(item => {
-                        const taskId = item.Task_ID || item.id;
-                        const subKey = `${taskId}_${studentId}`;
-                        
-                        // ค้นหาการส่งงานตรงตาม subKey หรือค้นหาในวัตถุ Submissions
-                        let submission = subVal[subKey];
-                        if (!submission) {
-                            Object.keys(subVal).forEach(k => {
-                                const s = subVal[k];
-                                if (String(s.Task_ID || s.task_id) === String(taskId) && String(s.Student_ID || s.student_id) === String(studentId)) {
-                                    submission = s;
-                                }
-                            });
-                        }
+                const assignVal = latestAssignments;
+                const subVal = latestSubmissions;
 
-                        if (submission) {
-                            return {
-                                ...item,
-                                isSubmitted: true,
-                                Score: submission.Score !== undefined ? submission.Score : submission.score,
-                                fileUrl: submission.File_URL || submission.file_url || submission.fileUrl,
-                                submittedAt: submission.Timestamp || submission.submittedAt
-                            };
-                        }
-                        return { ...item, isSubmitted: false };
-                    });
+                let assignments = Object.keys(assignVal).map(key => ({
+                    id: key,
+                    Task_ID: key,
+                    Assignment_ID: key,
+                    ...assignVal[key]
+                })).filter(a => {
+                    const aRoom = String(a.Room || a.room || '').toLowerCase();
+                    const aSub = String(a.Subject_ID || a.subject_id || '').toLowerCase();
+                    const targetRoom = room.toLowerCase();
+                    const targetSub = subjectId.toLowerCase();
 
-                    // แคชข้อมูล
-                    const cacheKey = `cached_dashboard_init_${studentId}`;
-                    try {
-                        const existing = JSON.parse(localStorage.getItem(cacheKey) || '{}');
-                        localStorage.setItem(cacheKey, JSON.stringify({ ...existing, assignments }));
-                    } catch(e){}
-
-                    renderAssignments(assignments);
+                    return !targetRoom || !aRoom || aRoom.includes(targetRoom) || targetRoom.includes(aRoom) || aSub.includes(targetSub);
                 });
+
+                // ตรวจสอบการส่งงานของนักเรียนแต่ละชิ้น
+                assignments = assignments.map(item => {
+                    const taskId = item.Task_ID || item.id;
+                    const subKey = `${taskId}_${studentId}`;
+
+                    // ค้นหาการส่งงานตรงตาม subKey หรือค้นหาในวัตถุ Submissions
+                    let submission = subVal[subKey];
+                    if (!submission) {
+                        Object.keys(subVal).forEach(k => {
+                            const s = subVal[k];
+                            if (String(s.Task_ID || s.task_id) === String(taskId) && String(s.Student_ID || s.student_id) === String(studentId)) {
+                                submission = s;
+                            }
+                        });
+                    }
+
+                    if (submission) {
+                        return {
+                            ...item,
+                            isSubmitted: true,
+                            Score: submission.Score !== undefined ? submission.Score : submission.score,
+                            fileUrl: submission.File_URL || submission.file_url || submission.fileUrl,
+                            submittedAt: submission.Timestamp || submission.submittedAt
+                        };
+                    }
+                    return { ...item, isSubmitted: false };
+                });
+
+                // แคชข้อมูล
+                const cacheKey = `cached_dashboard_init_${studentId}`;
+                try {
+                    const existing = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                    localStorage.setItem(cacheKey, JSON.stringify({ ...existing, assignments }));
+                } catch(e){}
+
+                renderAssignments(assignments);
+            };
+
+            // ฟังข้อมูล Assignments และ Submissions แยกกันเพื่อป้องกันการซ้อนทับกัน
+            db.ref('Assignments').on('value', (assignmentsSnap) => {
+                latestAssignments = assignmentsSnap.val() || {};
+                updateAssignmentsView();
+            });
+
+            db.ref('Submissions').on('value', (submissionsSnap) => {
+                latestSubmissions = submissionsSnap.val() || {};
+                updateAssignmentsView();
             });
 
             // ฟังข้อมูล แบบทดสอบออนไลน์ (Quizzes)
