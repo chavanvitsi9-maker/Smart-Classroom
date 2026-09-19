@@ -1673,7 +1673,7 @@
         }
 
         // --- MENU 1: โหลดสถิติ ---
-        function loadClassStats() {
+        async function loadClassStats() {
             if (!currentSubject) return;
             const room = currentSubject.Room || currentSubject.room || '';
             const subjectId = currentSubject.Subject_ID || currentSubject.id || '';
@@ -1681,66 +1681,71 @@
 
             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">กำลังโหลดข้อมูลสถิติ...</td></tr>';
 
-            db.ref('Students').once('value', (studentsSnap) => {
-                db.ref('Assignments').once('value', (assignmentsSnap) => {
-                    db.ref('Submissions').once('value', (submissionsSnap) => {
-                        const studentsVal = studentsSnap.val() || {};
-                        const assignmentsVal = assignmentsSnap.val() || {};
-                        const submissionsVal = submissionsSnap.val() || {};
+            try {
+                const [studentsSnap, assignmentsSnap, submissionsSnap] = await Promise.all([
+                    db.ref('Students').once('value'),
+                    db.ref('Assignments').once('value'),
+                    db.ref('Submissions').once('value')
+                ]);
 
-                        let students = Object.keys(studentsVal).map(key => ({ id: key, ...studentsVal[key] }))
-                            .filter(s => {
-                                const sRoom = String(s.Room || s.room || '').toLowerCase();
-                                const target = room.toLowerCase();
-                                return !target || sRoom.includes(target) || target.includes(sRoom);
-                            });
+                const studentsVal = studentsSnap.val() || {};
+                const assignmentsVal = assignmentsSnap.val() || {};
+                const submissionsVal = submissionsSnap.val() || {};
 
-                        let assignments = Object.keys(assignmentsVal).map(key => ({ id: key, ...assignmentsVal[key] }))
-                            .filter(a => {
-                                const aRoom = String(a.Room || a.room || '').toLowerCase();
-                                const target = room.toLowerCase();
-                                return !target || aRoom.includes(target) || target.includes(aRoom);
-                            });
-
-                        const statsList = students.map((std, idx) => {
-                            const stdId = std.Student_ID || std.id;
-                            let submittedCount = 0;
-                            let totalScore = 0;
-
-                            assignments.forEach(assign => {
-                                const subKey = `${assign.id}_${stdId}`;
-                                let sub = submissionsVal[subKey];
-                                if (!sub) {
-                                    Object.keys(submissionsVal).forEach(k => {
-                                        const s = submissionsVal[k];
-                                        if (String(s.Task_ID || s.task_id) === String(assign.id) && String(s.Student_ID || s.student_id) === String(stdId)) {
-                                            sub = s;
-                                        }
-                                    });
-                                }
-
-                                if (sub) {
-                                    submittedCount++;
-                                    if (sub.Score !== undefined && sub.Score !== null) {
-                                        totalScore += Number(sub.Score);
-                                    }
-                                }
-                            });
-
-                            return {
-                                no: std.No || (idx + 1),
-                                Student_ID: stdId,
-                                Name_Surname: std.Name_Surname || std.name,
-                                submittedCount: submittedCount,
-                                totalTasks: assignments.length,
-                                totalScore: totalScore
-                            };
-                        });
-
-                        renderClassStatsData({ students: statsList, totalStudents: statsList.length });
+                let students = Object.keys(studentsVal).map(key => ({ id: key, ...studentsVal[key] }))
+                    .filter(s => {
+                        const sRoom = String(s.Room || s.room || '').toLowerCase();
+                        const target = room.toLowerCase();
+                        return !target || sRoom.includes(target) || target.includes(sRoom);
                     });
+
+                let assignments = Object.keys(assignmentsVal).map(key => ({ id: key, ...assignmentsVal[key] }))
+                    .filter(a => {
+                        const aRoom = String(a.Room || a.room || '').toLowerCase();
+                        const target = room.toLowerCase();
+                        return !target || aRoom.includes(target) || target.includes(aRoom);
+                    });
+
+                const statsList = students.map((std, idx) => {
+                    const stdId = std.Student_ID || std.id;
+                    let submittedCount = 0;
+                    let totalScore = 0;
+
+                    assignments.forEach(assign => {
+                        const subKey = `${assign.id}_${stdId}`;
+                        let sub = submissionsVal[subKey];
+                        if (!sub) {
+                            Object.keys(submissionsVal).forEach(k => {
+                                const s = submissionsVal[k];
+                                if (String(s.Task_ID || s.task_id) === String(assign.id) && String(s.Student_ID || s.student_id) === String(stdId)) {
+                                    sub = s;
+                                }
+                            });
+                        }
+
+                        if (sub) {
+                            submittedCount++;
+                            if (sub.Score !== undefined && sub.Score !== null) {
+                                totalScore += Number(sub.Score);
+                            }
+                        }
+                    });
+
+                    return {
+                        no: std.No || (idx + 1),
+                        Student_ID: stdId,
+                        Name_Surname: std.Name_Surname || std.name,
+                        submittedCount: submittedCount,
+                        totalTasks: assignments.length,
+                        totalScore: totalScore
+                    };
                 });
-            });
+
+                renderClassStatsData({ students: statsList, totalStudents: statsList.length });
+            } catch (err) {
+                console.error('Error loading class stats:', err);
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#ef4444;">เกิดข้อผิดพลาดในการดึงข้อมูล</td></tr>';
+            }
         }
 
         // --- MENU 2: โหลดรายชื่อนักเรียน ---
