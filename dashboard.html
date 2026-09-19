@@ -543,14 +543,194 @@
             color: #6ee7b7;
             font-size: 0.88rem;
             font-weight: 600;
-            padding: 10px 14px;
+            padding: 12px 16px;
             border-radius: 14px;
             margin-bottom: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .submission-info-meta {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 8px;
             flex-wrap: wrap;
+        }
+
+        .submitted-multi-files-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(3, 8, 20, 0.6);
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+        }
+
+        .multi-files-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .files-badge-count {
+            font-family: var(--font-hud);
+            font-size: 0.82rem;
+            color: #38bdf8;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-view-all-files {
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.2) 0%, rgba(56, 189, 248, 0.25) 100%);
+            color: #38bdf8;
+            border: 1px solid rgba(0, 229, 255, 0.4);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-family: var(--font-hud);
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-view-all-files:hover {
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.35) 0%, rgba(56, 189, 248, 0.45) 100%);
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .multi-files-chips-list {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .file-chip-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid rgba(0, 229, 255, 0.35);
+            color: #67e8f9;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-family: var(--font-hud);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .file-chip-btn:hover {
+            background: rgba(0, 229, 255, 0.25);
+            border-color: var(--neon-cyan);
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.35);
+            transform: translateY(-1px);
+        }
+
+        /* Sci-Fi Image Gallery Modal */
+        .gallery-modal-card {
+            max-width: 960px;
+            width: 95%;
+            max-height: 94vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 24px;
+            background: rgba(5, 10, 25, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 229, 255, 0.35);
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.25), 0 20px 50px rgba(0, 0, 0, 0.9);
+            border-radius: 20px;
+            animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .gallery-stage {
+            position: relative;
+            flex: 1;
+            min-height: 380px;
+            max-height: 58vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, rgba(12, 24, 48, 0.8) 0%, rgba(2, 6, 16, 0.95) 100%);
+            border-radius: 14px;
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            overflow: hidden;
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.8);
+        }
+
+        .gallery-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: rgba(3, 8, 20, 0.8);
+            border: 1px solid rgba(0, 229, 255, 0.4);
+            color: #00e5ff;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(8px);
+        }
+
+        .gallery-nav-btn:hover {
+            background: rgba(0, 229, 255, 0.3);
+            border-color: var(--neon-cyan);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+            transform: translateY(-50%) scale(1.08);
+        }
+
+        .gallery-nav-btn.prev { left: 14px; }
+        .gallery-nav-btn.next { right: 14px; }
+
+        .gallery-thumb-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #94a3b8;
+            font-family: var(--font-hud);
+            font-size: 0.82rem;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .gallery-thumb-btn:hover {
+            background: rgba(0, 229, 255, 0.15);
+            border-color: rgba(0, 229, 255, 0.4);
+            color: #ffffff;
+        }
+
+        .gallery-thumb-btn.active {
+            background: rgba(0, 229, 255, 0.25);
+            border-color: var(--neon-cyan);
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+            transform: translateY(-1px);
         }
 
         .submission-info-banner a {
@@ -988,8 +1168,99 @@
             padding: 10px 14px;
             border-radius: 12px;
             border: 1px solid rgba(0, 229, 255, 0.2);
-            margin-bottom: 22px;
+            margin-bottom: 14px;
             word-break: break-all;
+        }
+
+        .selected-files-list-container {
+            max-height: 180px;
+            overflow-y: auto;
+            margin-bottom: 18px;
+            padding: 2px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-cyan) rgba(0,0,0,0.5);
+        }
+
+        .selected-files-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .selected-file-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(2, 6, 18, 0.9);
+            border: 1px solid rgba(0, 229, 255, 0.25);
+            border-radius: 12px;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .selected-file-item .file-thumb {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+
+        .selected-file-item .file-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .selected-file-item .file-details {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .selected-file-item .file-title {
+            font-family: var(--font-hud);
+            font-size: 0.85rem;
+            color: #ffffff;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .selected-file-item .file-meta {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .btn-remove-selected-file {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #fca5a5;
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 700;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-remove-selected-file:hover {
+            background: rgba(239, 68, 68, 0.4);
+            color: #ffffff;
+            border-color: #ef4444;
         }
 
         .modal-actions {
@@ -1348,17 +1619,20 @@
                 <label style="display: block; margin-bottom: 6px;">
                     🔗 วางลิงก์ Google Drive สำหรับส่งงาน:
                 </label>
-                <input type="url" id="studentDriveLinkInput" class="custom-input" style="width:100%; padding:12px; border-radius:14px; font-size:0.95rem; box-sizing:border-box;" placeholder="https://drive.google.com/file/d/...">
-                <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">* กรุณาเปิดสิทธิ์ลิงก์เป็น "ทุกคนที่มีลิงก์สามารถดูได้"</p>
+                <textarea id="studentDriveLinkInput" class="custom-input" style="width:100%; min-height:80px; padding:12px; border-radius:14px; font-size:0.92rem; box-sizing:border-box; resize:vertical; line-height:1.4;" placeholder="วางลิงก์ Google Drive (หากมีหลายลิงก์ สามารถวางหลายบรรทัด หรือคั่นด้วยเครื่องหมายจุลภาค , ได้)"></textarea>
+                <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">* กรุณาเปิดสิทธิ์ลิงก์เป็น "ทุกคนที่มีลิงก์สามารถดูได้" (รองรับหลายลิงก์)</p>
             </div>
             
-            <input type="file" id="fileInput" hidden onchange="handleFileSelect(event)">
+            <input type="file" id="fileInput" multiple accept="image/*,.pdf,.doc,.docx,.zip,.txt" hidden onchange="handleFileSelect(event)">
             
             <button type="button" class="btn-choose-file" onclick="document.getElementById('fileInput').click()">
-                <span>📁</span> เลือกไฟล์จากอุปกรณ์
+                <span>📁</span> เลือกไฟล์ / รูปภาพจากอุปกรณ์ (เลือกได้หลายรูป)
             </button>
 
-            <p class="file-name-display" id="fileNameDisplay">ยังไม่ได้เลือกไฟล์</p>
+            <div id="fileSelectionContainer">
+                <p class="file-name-display" id="fileNameDisplay">ยังไม่ได้เลือกไฟล์</p>
+                <div id="selectedFilesListContainer" class="selected-files-list-container" style="display: none;"></div>
+            </div>
 
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeSubmitModal()">ยกเลิก</button>
@@ -1390,6 +1664,66 @@
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" onclick="closeLogoutModal()">ยกเลิก</button>
                 <button type="button" class="btn-logout" onclick="confirmLogout()" style="flex:1.5; justify-content:center; background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color:white; border:none; box-shadow:0 0 20px rgba(239, 68, 68, 0.4);">🚪 ออกจากระบบ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sci-Fi Image Gallery Lightbox Modal -->
+    <div class="modal-overlay" id="imageGalleryModal" style="display: none;" onclick="if(event.target === this) closeImageGallery()">
+        <div class="modal-card gallery-modal-card">
+            <!-- Modal Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 229, 255, 0.2); padding-bottom: 12px; margin-bottom: 14px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.4rem;">🖼️</span>
+                    <div>
+                        <h3 style="margin: 0; font-family: var(--font-hud); color: #ffffff; font-size: 1.15rem; letter-spacing: 0.5px;">
+                            แกลเลอรีตรวจผลงานภารกิจ
+                        </h3>
+                        <span id="galleryCounter" style="font-size: 0.82rem; color: var(--neon-cyan); font-family: var(--font-hud);">
+                            รูปที่ 1 จาก 1
+                        </span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <a id="galleryDirectDriveBtn" href="#" target="_blank" rel="noopener" class="file-chip-btn" style="padding: 6px 14px; font-size: 0.82rem;" title="เปิดดูรูปปัจจุบันใน Google Drive เต็มหน้าจอ">
+                        <span>🔗</span> เปิดใน Google Drive
+                    </a>
+                    <button type="button" class="btn-cancel" onclick="closeImageGallery()" style="padding: 6px 14px; font-size: 0.9rem; min-width: auto; border-radius: 8px;">✕</button>
+                </div>
+            </div>
+
+            <!-- Main Image Viewer Stage with Prev/Next Controls -->
+            <div class="gallery-stage">
+                <!-- Prev Button -->
+                <button type="button" id="galleryPrevBtn" onclick="galleryPrevImage()" class="gallery-nav-btn prev" title="รูปก่อนหน้า (หรือกดลูกศรซ้าย)">◀</button>
+
+                <!-- Loading Spinner for Gallery Image -->
+                <div id="galleryImageLoading" style="display: none; position: absolute; flex-direction: column; align-items: center; gap: 8px; color: var(--neon-cyan);">
+                    <div class="cute-spinner" style="width: 36px; height: 36px; border-width: 3px;"></div>
+                    <span style="font-size: 0.85rem; font-family: var(--font-hud);">กำลังโหลดภาพคมชัด...</span>
+                </div>
+
+                <!-- Main Image Element -->
+                <img id="galleryMainImg" src="" alt="ภาพงานที่ส่ง" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; transition: opacity 0.25s ease;" onload="document.getElementById('galleryImageLoading').style.display='none'; this.style.opacity='1';" onerror="handleGalleryImageError(this)">
+
+                <!-- Iframe Fallback for PDF or non-image drive files -->
+                <iframe id="galleryIframePreview" src="" style="display: none; width: 100%; height: 100%; border: none; border-radius: 8px;"></iframe>
+
+                <!-- Next Button -->
+                <button type="button" id="galleryNextBtn" onclick="galleryNextImage()" class="gallery-nav-btn next" title="รูปถัดไป (หรือกดลูกศรขวา)">▶</button>
+            </div>
+
+            <!-- Thumbnail Strip & Navigation Footer -->
+            <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 10px;">
+                <div id="galleryThumbStrip" class="gallery-thumb-strip" style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; max-height: 100px; overflow-y: auto; padding: 4px;">
+                    <!-- Thumbnails generated dynamically -->
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 10px; flex-wrap: wrap; gap: 8px;">
+                    <span>💡 ใช้ปุ่มลูกศร ◀ ▶ บนคีย์บอร์ดเพื่อเปลี่ยนรูป หรือกด ESC เพื่อปิด</span>
+                    <button type="button" class="btn-view-all-files" onclick="tryOpenAllExternalTabs()" style="font-size: 0.78rem; padding: 5px 12px;">
+                        <span>🌐</span> พยายามเปิดทุกแท็บบนเบราว์เซอร์
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1631,7 +1965,10 @@
                             ...item,
                             isSubmitted: true,
                             Score: submission.Score !== undefined ? submission.Score : submission.score,
-                            fileUrl: submission.File_URL || submission.file_url || submission.fileUrl,
+                            fileUrl: submission.File_URL || submission.file_url || submission.fileUrl || '',
+                            File_URL: submission.File_URL || submission.file_url || submission.fileUrl || '',
+                            File_URLs: submission.File_URLs || submission.fileUrls || submission.Files || null,
+                            fileUrls: submission.File_URLs || submission.fileUrls || submission.Files || null,
                             submittedAt: submission.Timestamp || submission.submittedAt
                         };
                     }
@@ -1755,6 +2092,216 @@
             });
         }
 
+        // ฟังก์ชันสกัด URL ทั้งหมดของไฟล์งาน (รองรับทั้ง Array, JSON string, Comma-separated, Newline)
+        function extractAllFileUrls(input, item) {
+            const urls = [];
+            
+            if (item) {
+                if (Array.isArray(item.File_URLs)) {
+                    item.File_URLs.forEach(u => u && urls.push(String(u).trim()));
+                }
+                if (Array.isArray(item.fileUrls)) {
+                    item.fileUrls.forEach(u => u && urls.push(String(u).trim()));
+                }
+                if (Array.isArray(item.Files)) {
+                    item.Files.forEach(u => u && urls.push(String(u).trim()));
+                }
+            }
+
+            if (Array.isArray(input)) {
+                input.forEach(u => u && urls.push(String(u).trim()));
+            } else if (typeof input === 'string' && input.trim()) {
+                const raw = input.trim();
+                if (raw.startsWith('[') && raw.endsWith(']')) {
+                    try {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed)) {
+                            parsed.forEach(u => u && urls.push(String(u).trim()));
+                        }
+                    } catch (e) {}
+                }
+                
+                if (urls.length === 0) {
+                    const urlRegex = /(https?:\/\/[^\s"',;]+)/g;
+                    const matches = raw.match(urlRegex);
+                    if (matches && matches.length > 0) {
+                        matches.forEach(m => {
+                            const clean = m.trim().replace(/[,\s]+$/, '');
+                            if (clean && !urls.includes(clean)) {
+                                urls.push(clean);
+                            }
+                        });
+                    } else if (raw.startsWith('http://') || raw.startsWith('https://')) {
+                        urls.push(raw);
+                    }
+                }
+            }
+
+            return Array.from(new Set(urls.filter(Boolean)));
+        }
+
+        // ฟังก์ชันสกัด Google Drive File ID จาก URL
+        function getDriveFileId(url) {
+            if (!url) return '';
+            const match = String(url).match(/\/d\/([a-zA-Z0-9_-]+)/) || String(url).match(/id=([a-zA-Z0-9_-]+)/);
+            return match ? match[1] : '';
+        }
+
+        // ฟังก์ชันแปลง Drive URL เป็น Direct Image Thumbnail คมชัดสูง (ไม่ติด CORS)
+        function getDirectImageUrl(url) {
+            const fileId = getDriveFileId(url);
+            if (fileId) {
+                return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
+            }
+            return url;
+        }
+
+        // ตัวแปรและฟังก์ชันควบคุม Sci-Fi Image Gallery Modal
+        let currentGalleryUrls = [];
+        let galleryCurrentIdx = 0;
+
+        function openImageGallery(urls, startIndex = 0) {
+            if (!urls || !urls.length) return;
+            currentGalleryUrls = urls;
+            galleryCurrentIdx = Math.max(0, Math.min(startIndex, urls.length - 1));
+
+            const modal = document.getElementById('imageGalleryModal');
+            if (modal) modal.style.display = 'flex';
+            playLaserSound();
+            renderGalleryView();
+        }
+
+        function closeImageGallery() {
+            const modal = document.getElementById('imageGalleryModal');
+            if (modal) modal.style.display = 'none';
+            const iframe = document.getElementById('galleryIframePreview');
+            if (iframe) iframe.src = '';
+        }
+
+        function renderGalleryView() {
+            if (!currentGalleryUrls.length) return;
+            const url = currentGalleryUrls[galleryCurrentIdx];
+            const total = currentGalleryUrls.length;
+
+            const counterEl = document.getElementById('galleryCounter');
+            if (counterEl) counterEl.textContent = `รูปที่ ${galleryCurrentIdx + 1} จากทั้งหมด ${total} รูป`;
+
+            const directBtn = document.getElementById('galleryDirectDriveBtn');
+            if (directBtn) directBtn.href = url;
+
+            const img = document.getElementById('galleryMainImg');
+            const iframe = document.getElementById('galleryIframePreview');
+            const spinner = document.getElementById('galleryImageLoading');
+
+            if (spinner) spinner.style.display = 'flex';
+            if (iframe) {
+                iframe.style.display = 'none';
+                iframe.src = '';
+            }
+
+            if (img) {
+                img.dataset.fallbackTried = '';
+                img.style.display = 'block';
+                img.style.opacity = '0.15';
+                img.src = getDirectImageUrl(url);
+            }
+
+            const prevBtn = document.getElementById('galleryPrevBtn');
+            const nextBtn = document.getElementById('galleryNextBtn');
+            if (prevBtn) prevBtn.style.opacity = galleryCurrentIdx > 0 ? '1' : '0.25';
+            if (nextBtn) nextBtn.style.opacity = galleryCurrentIdx < total - 1 ? '1' : '0.25';
+
+            const strip = document.getElementById('galleryThumbStrip');
+            if (strip) {
+                strip.innerHTML = currentGalleryUrls.map((u, i) => {
+                    const isActive = i === galleryCurrentIdx;
+                    return `
+                        <button type="button" onclick="galleryJumpTo(${i})" class="gallery-thumb-btn ${isActive ? 'active' : ''}">
+                            <span>🖼️</span> รูปที่ ${i + 1}
+                        </button>
+                    `;
+                }).join('');
+            }
+        }
+
+        function galleryPrevImage() {
+            if (galleryCurrentIdx > 0) {
+                galleryCurrentIdx--;
+                playLaserSound();
+                renderGalleryView();
+            }
+        }
+
+        function galleryNextImage() {
+            if (galleryCurrentIdx < currentGalleryUrls.length - 1) {
+                galleryCurrentIdx++;
+                playLaserSound();
+                renderGalleryView();
+            }
+        }
+
+        function galleryJumpTo(index) {
+            if (index >= 0 && index < currentGalleryUrls.length) {
+                galleryCurrentIdx = index;
+                playLaserSound();
+                renderGalleryView();
+            }
+        }
+
+        function handleGalleryImageError(img) {
+            const currentUrl = currentGalleryUrls[galleryCurrentIdx] || '';
+            const fileId = getDriveFileId(currentUrl);
+            if (fileId && !img.dataset.fallbackTried) {
+                img.dataset.fallbackTried = 'true';
+                img.src = `https://lh3.googleusercontent.com/d/${fileId}`;
+            } else {
+                img.style.display = 'none';
+                const iframe = document.getElementById('galleryIframePreview');
+                if (iframe && fileId) {
+                    iframe.src = `https://drive.google.com/file/d/${fileId}/preview`;
+                    iframe.style.display = 'block';
+                }
+                const spinner = document.getElementById('galleryImageLoading');
+                if (spinner) spinner.style.display = 'none';
+            }
+        }
+
+        // ปุ่มพยายามเปิดทุกรูปในแท็บเบราว์เซอร์ พร้อมแจ้งเตือนหากโดน Pop-up blocker
+        function tryOpenAllExternalTabs() {
+            if (!currentGalleryUrls.length) return;
+            playLaserSound();
+            let openedCount = 0;
+            currentGalleryUrls.forEach((u, i) => {
+                try {
+                    const win = window.open(u, '_blank');
+                    if (win) openedCount++;
+                } catch(e){}
+            });
+
+            if (openedCount < currentGalleryUrls.length) {
+                showAlertModal(
+                    'เบราว์เซอร์บล็อกป๊อปอัปหลายแท็บ',
+                    `เบราว์เซอร์ของคุณเปิดได้ ${openedCount} แท็บ และบล็อกแท็บที่เหลือ กรุณาดูผ่าน 'แกลเลอรี' ในหน้านี้ หรือคลิกที่ไอคอนรูปป๊อปอัปบนแถบ URL ของเบราว์เซอร์แล้วเลือก 'อนุญาตเสมอ' ครับ 🌐`,
+                    'info'
+                );
+            }
+        }
+
+        // คีย์บอร์ดนำทางใน Gallery
+        document.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('imageGalleryModal');
+            if (!modal || modal.style.display === 'none') return;
+            if (e.key === 'ArrowLeft') galleryPrevImage();
+            else if (e.key === 'ArrowRight') galleryNextImage();
+            else if (e.key === 'Escape') closeImageGallery();
+        });
+
+        // ฟังก์ชันเปิดดูทุกรูป: เรียก In-App Lightbox Gallery ทันที แก้ปัญหาเบราว์เซอร์บล็อก Pop-up ได้ 100%
+        function openAllFiles(urls) {
+            if (!urls || !urls.length) return;
+            openImageGallery(urls, 0);
+        }
+
         // ฟังก์ชันสร้าง HTML สำหรับการ์ดชิ้นงาน 3D
         function renderAssignments(assignments) {
             const assignmentList = document.getElementById('assignmentList');
@@ -1802,8 +2349,8 @@
                 const submissionType = item.Submission_Type || item.submission_type || 'รูปภาพ/ไฟล์';
 
                 const isSubmitted = Boolean(item.isSubmitted);
-                const fileUrl = item.fileUrl || '';
                 const submittedAt = item.submittedAt || '';
+                const urls = extractAllFileUrls(item.fileUrl || item.File_URL || '', item);
 
                 const isLinkType = String(submissionType).includes('ลิงก์');
                 const linkLabelText = isLinkType ? '🔗 ดูลิงก์ที่ส่ง' : '📁 ดูไฟล์งานที่ส่ง';
@@ -1825,12 +2372,46 @@
                     ? `<span class="badge-subject" style="background:rgba(249, 115, 22, 0.15); color:#fb923c; border-color:rgba(249, 115, 22, 0.4);">👥 งานกลุ่ม (SQUAD)</span>`
                     : `<span class="badge-subject" style="background:rgba(0, 229, 255, 0.12); color:#67e8f9; border-color:rgba(0, 229, 255, 0.3);">👤 งานเดี่ยว (SOLO)</span>`;
 
-                const submissionInfoHtml = isSubmitted 
-                    ? `<div class="submission-info-banner">
-                           <span>✅ ส่งภารกิจเมื่อ ${formatDate(submittedAt)}</span>
-                           ${fileUrl ? `<a href="${fileUrl}" target="_blank" rel="noopener">${linkLabelText}</a>` : ''}
-                       </div>`
-                    : '';
+                let submissionInfoHtml = '';
+                if (isSubmitted) {
+                    let filesHtml = '';
+                    const safeUrlsJson = JSON.stringify(urls).replace(/"/g, '&quot;');
+                    if (urls.length === 1) {
+                        filesHtml = `
+                            <a href="${urls[0]}" target="_blank" rel="noopener" class="file-chip-btn" onclick="if(!${isLinkType}){event.preventDefault(); openImageGallery(${safeUrlsJson}, 0);}" title="คลิกเพื่อดูภาพขยาย">
+                                <span>${isLinkType ? '🔗' : '📁'}</span> ${linkLabelText}
+                            </a>
+                        `;
+                    } else if (urls.length > 1) {
+                        filesHtml = `
+                            <div class="submitted-multi-files-wrap">
+                                <div class="multi-files-header">
+                                    <span class="files-badge-count">📁 รวม ${urls.length} รูป/ไฟล์:</span>
+                                    <button type="button" class="btn-view-all-files" onclick="openAllFiles(${safeUrlsJson})" title="คลิกเพื่อเปิดดูภาพทุกรูปในแกลเลอรี">
+                                        <span>🖼️</span> เปิดดูทุกรูป (แกลเลอรี)
+                                    </button>
+                                </div>
+                                <div class="multi-files-chips-list">
+                                    ${urls.map((u, idx) => `
+                                        <a href="${u}" target="_blank" rel="noopener" class="file-chip-btn" onclick="event.preventDefault(); openImageGallery(${safeUrlsJson}, ${idx});" title="คลิกเพื่อดูรูปที่ ${idx + 1} ในแกลเลอรี">
+                                            <span>🖼️</span> รูปที่ ${idx + 1}
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    submissionInfoHtml = `
+                        <div class="submission-info-banner">
+                            <div class="submission-info-meta">
+                                <span>✅ ส่งภารกิจเมื่อ ${formatDate(submittedAt)}</span>
+                                ${urls.length === 1 ? filesHtml : ''}
+                            </div>
+                            ${urls.length > 1 ? filesHtml : ''}
+                        </div>
+                    `;
+                }
 
                 const buttonHtml = isSubmitted
                     ? `<button type="button" class="btn-submit-work submitted" data-type="${taskType}" data-submission-type="${submissionType}" onclick="submitAssignment('${safeTaskId}', '${safeTitle}', '${safeTaskType}', '${safeSubTypes}')">
@@ -1871,12 +2452,12 @@
             currentSubmissionType = submissionType;
             selectedFile = null;
             selectedBase64 = '';
+            selectedFilesList = [];
             
             const fileInput = document.getElementById('fileInput');
             if (fileInput) fileInput.value = '';
             
-            const fileNameDisplay = document.getElementById('fileNameDisplay');
-            if (fileNameDisplay) fileNameDisplay.textContent = 'ยังไม่ได้เลือกไฟล์';
+            renderSelectedFilesUI();
 
             const modalTitle = document.getElementById('modalTaskName');
             if (modalTitle) modalTitle.textContent = `${currentTaskName} (${taskType === 'กลุ่ม' ? '👥 งานกลุ่ม' : '👤 งานเดี่ยว'})`;
@@ -1897,17 +2478,19 @@
             const isLinkType = String(submissionType).includes('ลิงก์');
             const driveLinkContainer = document.getElementById('driveLinkContainer');
             const btnChooseFile = document.querySelector('.btn-choose-file');
+            const fileSelectionContainer = document.getElementById('fileSelectionContainer');
             
             if (driveLinkContainer) {
                 if (isLinkType) {
                     driveLinkContainer.style.display = 'block';
                     if (btnChooseFile) btnChooseFile.style.display = 'none';
-                    if (fileNameDisplay) fileNameDisplay.style.display = 'none';
-                    document.getElementById('studentDriveLinkInput').value = '';
+                    if (fileSelectionContainer) fileSelectionContainer.style.display = 'none';
+                    const driveInput = document.getElementById('studentDriveLinkInput');
+                    if (driveInput) driveInput.value = '';
                 } else {
                     driveLinkContainer.style.display = 'none';
                     if (btnChooseFile) btnChooseFile.style.display = 'flex';
-                    if (fileNameDisplay) fileNameDisplay.style.display = 'block';
+                    if (fileSelectionContainer) fileSelectionContainer.style.display = 'block';
                 }
             }
 
@@ -1972,6 +2555,12 @@
 
         function closeSubmitModal() {
             playLaserSound();
+            selectedFilesList = [];
+            selectedFile = null;
+            selectedBase64 = '';
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput) fileInput.value = '';
+            renderSelectedFilesUI();
             document.getElementById('submitModal').style.display = 'none';
         }
 
@@ -2033,49 +2622,159 @@
             });
         }
 
-        async function handleFileSelect(event) {
-            const rawFile = event.target.files[0];
-            if (!rawFile) return;
+        let selectedFilesList = []; // รายการไฟล์ที่เลือกส่ง { file, base64, name, size, type }
 
-            document.getElementById('fileNameDisplay').textContent = '⚡ กำลังสแกนและประมวลผลไฟล์...';
-            
-            const file = await compressImageIfNeeded(rawFile);
+        function readFileAsBase64(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = () => resolve('');
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function handleFileSelect(event) {
+            const files = Array.from(event.target.files || []);
+            if (!files.length) return;
+
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            if (fileNameDisplay) {
+                fileNameDisplay.textContent = `⚡ กำลังสแกนและประมวลผล ${files.length} ไฟล์...`;
+                fileNameDisplay.style.color = '#38bdf8';
+                fileNameDisplay.style.display = 'block';
+            }
 
             const maxMB = 20;
-            if (file.size > maxMB * 1024 * 1024) {
-                showAlertModal('ไฟล์ขนาดใหญ่เกินไป', `กรุณาเลือกไฟล์ที่มีขนาดไม่เกิน ${maxMB} MB ครับ 📁`, 'warning');
-                event.target.value = '';
+
+            for (const rawFile of files) {
+                const processedFile = await compressImageIfNeeded(rawFile);
+                if (processedFile.size > maxMB * 1024 * 1024) {
+                    showAlertModal('ไฟล์ขนาดใหญ่เกินไป', `ไฟล์ "${processedFile.name}" มีขนาดเกิน ${maxMB} MB จึงถูกข้ามครับ 📁`, 'warning');
+                    continue;
+                }
+
+                const base64 = await readFileAsBase64(processedFile);
+                selectedFilesList.push({
+                    file: processedFile,
+                    base64: base64,
+                    name: processedFile.name,
+                    size: processedFile.size,
+                    type: processedFile.type || 'image/jpeg'
+                });
+            }
+
+            // ล้างค่า input เพื่อให้สามารถกดเลือกไฟล์เพิ่ม หรือเลือกไฟล์เดิมซ้ำได้
+            event.target.value = '';
+
+            // รักษาความเข้ากันได้ย้อนหลัง
+            if (selectedFilesList.length > 0) {
+                selectedFile = selectedFilesList[0].file;
+                selectedBase64 = selectedFilesList[0].base64;
+            } else {
                 selectedFile = null;
                 selectedBase64 = '';
-                document.getElementById('fileNameDisplay').textContent = 'ยังไม่ได้เลือกไฟล์';
+            }
+
+            renderSelectedFilesUI();
+        }
+
+        function renderSelectedFilesUI() {
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            const container = document.getElementById('selectedFilesListContainer');
+            
+            if (!selectedFilesList.length) {
+                if (fileNameDisplay) {
+                    fileNameDisplay.textContent = 'ยังไม่ได้เลือกไฟล์';
+                    fileNameDisplay.style.color = '#94a3b8';
+                    fileNameDisplay.style.display = 'block';
+                }
+                if (container) {
+                    container.innerHTML = '';
+                    container.style.display = 'none';
+                }
                 return;
             }
 
-            selectedFile = file;
-            const sizeInKB = (file.size / 1024).toFixed(1);
-            document.getElementById('fileNameDisplay').textContent = `📄 ${file.name} (${sizeInKB} KB)`;
+            const totalSizeKB = (selectedFilesList.reduce((acc, f) => acc + f.size, 0) / 1024).toFixed(1);
+            
+            if (fileNameDisplay) {
+                fileNameDisplay.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                        <strong style="color:var(--neon-cyan);">📁 เลือกแล้ว ${selectedFilesList.length} ไฟล์ (${totalSizeKB} KB)</strong>
+                        <button type="button" onclick="clearSelectedFiles()" style="background:rgba(239,68,68,0.18); border:1px solid rgba(239,68,68,0.4); color:#fca5a5; font-size:0.75rem; padding:3px 8px; border-radius:6px; cursor:pointer; font-weight:700;">
+                            🗑️ ล้างทั้งหมด
+                        </button>
+                    </div>
+                `;
+                fileNameDisplay.style.display = 'block';
+            }
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                selectedBase64 = e.target.result;
-            };
-            reader.readAsDataURL(file);
+            if (container) {
+                container.style.display = 'block';
+                container.innerHTML = `
+                    <div class="selected-files-grid">
+                        ${selectedFilesList.map((item, idx) => {
+                            const isImg = item.type && item.type.startsWith('image/');
+                            const sizeKB = (item.size / 1024).toFixed(1);
+                            return `
+                                <div class="selected-file-item">
+                                    <div class="file-thumb">
+                                        ${isImg ? `<img src="${item.base64}" alt="thumb">` : `<span>📄</span>`}
+                                    </div>
+                                    <div class="file-details">
+                                        <span class="file-title" title="${item.name}">${idx + 1}. ${item.name}</span>
+                                        <span class="file-meta">${sizeKB} KB</span>
+                                    </div>
+                                    <button type="button" class="btn-remove-selected-file" onclick="removeSelectedFile(${idx})" title="ลบไฟล์นี้">✕</button>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
         }
 
-        // 6. ฟังก์ชันกดยืนยันการส่งงาน: อัปโหลดไฟล์ไป Google Drive ผ่าน GAS แล้วบันทึก metadata ลง Firebase
+        function removeSelectedFile(idx) {
+            if (idx >= 0 && idx < selectedFilesList.length) {
+                selectedFilesList.splice(idx, 1);
+                if (selectedFilesList.length > 0) {
+                    selectedFile = selectedFilesList[0].file;
+                    selectedBase64 = selectedFilesList[0].base64;
+                } else {
+                    selectedFile = null;
+                    selectedBase64 = '';
+                }
+                renderSelectedFilesUI();
+            }
+        }
+
+        function clearSelectedFiles() {
+            selectedFilesList = [];
+            selectedFile = null;
+            selectedBase64 = '';
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput) fileInput.value = '';
+            renderSelectedFilesUI();
+        }
+
+        // 6. ฟังก์ชันกดยืนยันการส่งงาน: อัปโหลดไฟล์ไป Google Drive ผ่าน GAS แล้วบันทึก metadata ลง Firebase (รองรับหลายไฟล์)
         async function confirmSubmitWork() {
             const isLinkSubmission = currentSubmissionType.includes('ลิงก์');
-            let driveLinkVal = '';
+            let submittedUrls = [];
 
             if (isLinkSubmission) {
                 const driveInput = document.getElementById('studentDriveLinkInput');
-                driveLinkVal = driveInput ? driveInput.value.trim() : '';
+                const driveLinkVal = driveInput ? driveInput.value.trim() : '';
                 if (!driveLinkVal) {
                     showAlertModal('ยังไม่ได้กรอกลิงก์', 'กรุณาวางลิงก์ Google Drive ของคุณก่อนส่งงานครับ 🔗', 'warning');
                     return;
                 }
+                submittedUrls = extractAllFileUrls(driveLinkVal);
+                if (!submittedUrls.length) {
+                    submittedUrls = [driveLinkVal];
+                }
             } else {
-                if (!selectedFile || !selectedBase64) {
+                if (!selectedFilesList || selectedFilesList.length === 0) {
                     showAlertModal('ยังไม่ได้เลือกไฟล์', 'กรุณากดเลือกไฟล์รูปภาพหรือเอกสารก่อนส่งงานครับ 📁', 'warning');
                     return;
                 }
@@ -2108,73 +2807,95 @@
                 groupMembersStr = selectedOpts.join(', ');
             }
 
-            closeSubmitModal();
+            // ซ่อนหน้าต่าง Modal ส่งงานโดยยังไม่ล้างรายการไฟล์ (จะล้างเมื่อส่งสำเร็จเท่านั้น)
+            document.getElementById('submitModal').style.display = 'none';
+
+            const filesToUpload = [...selectedFilesList];
             const loadingUI = document.getElementById('loadingUI');
-            document.getElementById('loadingText').textContent = isLinkSubmission ? 'กำลังส่งข้อมูลลิงก์ไปยังสถานีแม่ข่าย...' : 'กำลังส่งไฟล์ Payload ไปยัง Google Drive...';
+            const loadingText = document.getElementById('loadingText');
+            loadingText.textContent = isLinkSubmission ? 'กำลังส่งข้อมูลลิงก์ไปยังสถานีแม่ข่าย...' : 'กำลังเตรียมอัปโหลดไฟล์ Payload ไปยัง Google Drive...';
             loadingUI.style.display = 'flex';
 
             try {
-                let uploadedUrl = driveLinkVal;
+                if (!isLinkSubmission && filesToUpload.length > 0) {
+                    const totalFiles = filesToUpload.length;
+                    let completedCount = 0;
 
-                if (!isLinkSubmission && selectedBase64) {
-                    const payload = {
-                        action: 'submitWork',
-                        task_id: currentTaskId,
-                        task_name: currentTaskName,
-                        student_id: studentId,
-                        student_name: studentName,
-                        no: studentNo,
-                        filename: selectedFile ? selectedFile.name : '',
-                        mimeType: selectedFile ? selectedFile.type : '',
-                        base64Data: selectedBase64
-                    };
+                    if (loadingText) {
+                        loadingText.textContent = totalFiles > 1
+                            ? `กำลังเริ่มอัปโหลดไฟล์ Payload ทั้งหมด ${totalFiles} ไฟล์พร้อมกัน...`
+                            : `กำลังส่งไฟล์ Payload ไปยัง Google Drive...`;
+                    }
 
-                    const targetUrl = API_URL.includes('?') ? `${API_URL}&action=submitWork` : `${API_URL}?action=submitWork`;
-                    const response = await fetch(targetUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify(payload),
-                        redirect: 'follow'
+                    const uploadPromises = filesToUpload.map(async (fileItem, idx) => {
+                        const payload = {
+                            action: 'submitWork',
+                            task_id: currentTaskId,
+                            task_name: currentTaskName,
+                            student_id: studentId,
+                            student_name: studentName,
+                            no: studentNo,
+                            filename: fileItem.name,
+                            mimeType: fileItem.type || 'image/jpeg',
+                            base64Data: fileItem.base64
+                        };
+
+                        const targetUrl = API_URL.includes('?') ? `${API_URL}&action=submitWork` : `${API_URL}?action=submitWork`;
+                        const response = await fetch(targetUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify(payload),
+                            redirect: 'follow'
+                        });
+
+                        const responseText = await response.text();
+                        let gasResult = null;
+                        try { gasResult = JSON.parse(responseText); } catch(pe){}
+
+                        let uploadedUrl = '';
+                        if (gasResult) {
+                            uploadedUrl = gasResult.url || gasResult.fileUrl || gasResult.file_url || (gasResult.data && (gasResult.data.url || gasResult.data.fileUrl)) || '';
+                        }
+
+                        completedCount++;
+                        if (loadingText) {
+                            loadingText.textContent = totalFiles > 1
+                                ? `อัปโหลดไฟล์สำเร็จ (${completedCount}/${totalFiles}): ${fileItem.name}...`
+                                : `กำลังส่งไฟล์ Payload ไปยัง Google Drive...`;
+                        }
+
+                        if (!uploadedUrl && gasResult && gasResult.status === 'error') {
+                            throw new Error(gasResult.message || `ไม่สามารถอัปโหลดไฟล์ "${fileItem.name}" ได้`);
+                        }
+                        return uploadedUrl;
                     });
 
-                    const responseText = await response.text();
-                    let gasResult = null;
-                    try { gasResult = JSON.parse(responseText); } catch(pe){}
+                    const uploadedResults = await Promise.all(uploadPromises);
+                    submittedUrls = uploadedResults.filter(Boolean);
 
-                    if (gasResult) {
-                        uploadedUrl = gasResult.url || gasResult.fileUrl || gasResult.file_url || (gasResult.data && (gasResult.data.url || gasResult.data.fileUrl)) || '';
-                    }
-
-                    const subKeyCheck = `${currentTaskId}_${studentId}`;
-                    if (!uploadedUrl) {
-                        // Dual-Sync Fallback: เช็คไฟล์ URL จาก Firebase RTDB ที่ Google Apps Script ส่งเข้ามา
-                        try {
-                            const snap = await db.ref(`Submissions/${subKeyCheck}`).once('value');
-                            const data = snap.val();
-                            if (data && (data.File_URL || data.fileUrl)) {
-                                uploadedUrl = data.File_URL || data.fileUrl;
-                            }
-                        } catch (e) {}
-                    }
-
-                    if (!uploadedUrl && gasResult && gasResult.status === 'error' && !response.ok) {
-                        console.error('GAS Upload Response Error:', responseText);
-                        throw new Error('ไม่สามารถอัปโหลดไฟล์ไป Google Drive ได้ กรุณาตรวจสอบการตั้งค่าสิทธิ์ Apps Script Web App ให้เป็น "Anyone" หรือลองแนบเป็นลิงก์ Google Drive');
+                    if (submittedUrls.length === 0) {
+                        throw new Error('ไม่สามารถบันทึกไฟล์ไปยัง Google Drive ได้ กรุณาลองใหม่อีกครั้ง');
                     }
                 }
 
                 const subKey = `${currentTaskId}_${studentId}`;
                 const nowIso = new Date().toISOString();
 
-                // รักษา File_URL เดิมถ้ามีกรณีอัปเดตข้อมูลเพิ่มเติม
-                let finalFileUrl = uploadedUrl || '';
-                if (!finalFileUrl) {
+                let finalUrls = Array.from(new Set(submittedUrls.filter(Boolean)));
+
+                // รักษา File_URL เดิมถ้ามีกรณีอัปเดตข้อมูลเพิ่มเติมแต่ไม่ได้ส่งไฟล์ใหม่
+                if (finalUrls.length === 0) {
                     try {
                         const existingSnap = await db.ref(`Submissions/${subKey}`).once('value');
                         const existingData = existingSnap.val() || {};
-                        finalFileUrl = existingData.File_URL || existingData.fileUrl || '';
+                        const oldUrls = extractAllFileUrls(existingData.File_URLs || existingData.fileUrls || existingData.File_URL || existingData.fileUrl || '', existingData);
+                        if (oldUrls.length > 0) {
+                            finalUrls = oldUrls;
+                        }
                     } catch(e) {}
                 }
+
+                const finalFileUrl = finalUrls.join(', ');
 
                 const submissionRecord = {
                     Submission_ID: subKey,
@@ -2186,15 +2907,29 @@
                     Room: studentRoomGlobal,
                     Group_Members: groupMembersStr,
                     File_URL: finalFileUrl,
-                    fileUrl: finalFileUrl,
+                    fileUrl: finalUrls[0] || '',
+                    File_URLs: finalUrls,
+                    fileUrls: finalUrls,
+                    Files_Count: finalUrls.length,
                     Timestamp: nowIso,
                     submittedAt: nowIso
                 };
 
                 await db.ref(`Submissions/${subKey}`).set(submissionRecord);
 
+                // ล้างไฟล์ที่เลือกหลังจากส่งงานสำเร็จสมบูรณ์
+                selectedFilesList = [];
+                selectedFile = null;
+                selectedBase64 = '';
+                const fileInput = document.getElementById('fileInput');
+                if (fileInput) fileInput.value = '';
+                renderSelectedFilesUI();
+
                 playSuccessSound();
-                showAlertModal('🎉 ส่งงานสำเร็จ!', 'ไฟล์งานและข้อมูลภารกิจของคุณถูกบันทึกสู่ระบบแม่ข่ายเรียบร้อยแล้วครับ 🚀', 'success');
+                const successMsg = finalUrls.length > 1
+                    ? `ไฟล์งานทั้ง ${finalUrls.length} รูปและข้อมูลภารกิจของคุณถูกบันทึกสู่ระบบแม่ข่ายเรียบร้อยแล้วครับ 🚀`
+                    : 'ไฟล์งานและข้อมูลภารกิจของคุณถูกบันทึกสู่ระบบแม่ข่ายเรียบร้อยแล้วครับ 🚀';
+                showAlertModal('🎉 ส่งงานสำเร็จ!', successMsg, 'success');
             } catch (error) {
                 console.error('Error submitting work:', error);
                 showAlertModal('❌ เกิดข้อผิดพลาด', error.message || 'ไม่สามารถบันทึกการส่งงานได้ กรุณาลองใหม่อีกครั้ง', 'error');
