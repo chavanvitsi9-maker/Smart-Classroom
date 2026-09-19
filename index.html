@@ -651,27 +651,21 @@
 
                 <div class="form-header">
                     <h2><span>👩‍🎓</span> เข้าสู่ระบบนักเรียน</h2>
-                    <p>เลือกวิชาและชื่อของนักเรียนเพื่อเข้าใช้งาน</p>
+                    <p>กรอกรหัสนักเรียนและรหัสผ่านเพื่อเข้าใช้งาน</p>
                 </div>
 
                 <form id="studentLoginForm">
                     <div class="form-group">
-                        <label for="subjectSelect">📖 1. เลือกรายวิชา / ห้องเรียน</label>
-                        <select id="subjectSelect" class="custom-select" onchange="loadStudents()">
-                            <option value="" disabled selected>-- กำลังโหลดรายวิชา... --</option>
-                        </select>
+                        <label for="studentIdInput">🆔 1. รหัสนักเรียน (Student ID)</label>
+                        <input type="text" id="studentIdInput" class="custom-input" placeholder="เช่น 6601 หรือ 6501001" autocomplete="username" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="studentSelect">👤 2. เลือกชื่อ - นามสกุลนักเรียน</label>
-                        <select id="studentSelect" class="custom-select" disabled>
-                            <option value="" disabled selected>-- กรุณาเลือกรายวิชาก่อน --</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="pinCode">🔑 3. รหัสผ่านยืนยันตัวตน (PIN 4 หลัก)</label>
-                        <input type="password" id="pinCode" class="custom-input" placeholder="กรอกรหัส PIN (เช่น 1234)" maxlength="4" pattern="[0-9]*" inputmode="numeric" required>
+                        <label for="pinCode">🔑 2. รหัสผ่านยืนยันตัวตน (PIN)</label>
+                        <div style="position: relative;">
+                            <input type="password" id="pinCode" class="custom-input" placeholder="กรอกรหัส PIN (เช่น 1234)" maxlength="10" inputmode="numeric" required style="padding-right: 44px;">
+                            <button type="button" onclick="togglePasswordVisibility('pinCode', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 1.15rem; padding: 4px;" title="แสดง/ซ่อนรหัสผ่าน">👁️</button>
+                        </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
                             <span style="font-size: 0.82rem; color: #64748b;">* รหัสเริ่มต้นคือ 1234</span>
                             <a href="javascript:void(0)" onclick="promptForgotPin()" style="font-size: 0.88rem; color: #2563eb; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">🔑 ลืมรหัส PIN?</a>
@@ -857,6 +851,7 @@
 
         async function loadSubjects() {
             const subjectSelect = document.getElementById('subjectSelect');
+            if (!subjectSelect) return;
 
             // 1. Instant Load จาก LocalStorage (แสดงผลทันที 0ms)
             let hasCachedData = false;
@@ -902,6 +897,7 @@
         async function loadStudents() {
             const subjectSelect = document.getElementById('subjectSelect');
             const studentSelect = document.getElementById('studentSelect');
+            if (!subjectSelect || !studentSelect) return;
 
             const selectedOption = subjectSelect.options[subjectSelect.selectedIndex];
             const roomName = selectedOption ? selectedOption.getAttribute('data-room') || subjectSelect.value : '';
@@ -964,64 +960,105 @@
         }
 
         // =========================================
-        // 3. Forgot PIN & Self-Service Reset
+        // 3. Helper Functions & Forgot PIN
         // =========================================
-        function promptForgotPin() {
-            const studentSelect = document.getElementById('studentSelect');
-            const selectedOpt = studentSelect.options[studentSelect.selectedIndex];
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
 
-            if (!studentSelect.value || studentSelect.disabled || !selectedOpt || selectedOpt.disabled) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'กรุณาเลือกรายชื่อนักเรียน',
-                    text: 'กรุณาเลือกรายวิชาและรายชื่อนักเรียนของคุณจากรายการด้านบนก่อนกดลืมรหัส PIN ครับ',
+        async function promptForgotPin() {
+            let studentId = (document.getElementById('studentIdInput')?.value || '').trim();
+            if (!studentId) {
+                const { value: inputId } = await Swal.fire({
+                    title: '🔑 ลืมรหัส PIN?',
+                    html: '<p style="font-size: 0.95rem; color: #475569;">กรุณาระบุ <strong>รหัสนักเรียน</strong> ของคุณเพื่อตรวจสอบข้อมูล</p>',
+                    input: 'text',
+                    inputPlaceholder: 'กรอกรหัสนักเรียน (เช่น 6601 หรือ 6501001)',
+                    showCancelButton: true,
+                    confirmButtonText: 'ถัดไป ➡️',
+                    cancelButtonText: 'ยกเลิก',
                     confirmButtonColor: '#2563eb',
-                    confirmButtonText: 'ตกลง'
+                    cancelButtonColor: '#64748b',
+                    inputValidator: (value) => {
+                        if (!value || !value.trim()) {
+                            return '⚠️ กรุณาระบุรหัสนักเรียนครับ';
+                        }
+                    }
                 });
-                return;
+                if (!inputId) return;
+                studentId = inputId.trim();
             }
 
-            const studentId = studentSelect.value;
-            const studentName = selectedOpt.getAttribute('data-name') || selectedOpt.textContent || '';
-
             Swal.fire({
-                title: '🔑 ยืนยันตัวตนเพื่อรีเซ็ต PIN',
-                html: `นักเรียน: <strong style="color: #2563eb; font-size: 1.1rem;">${studentName}</strong><br><br><span style="font-size: 0.92rem; color: #475569;">เพื่อความปลอดภัย กรุณาระบุ <strong>รหัสนักเรียน</strong> ของคุณเพื่อยืนยันตัวตน</span>`,
-                input: 'text',
-                inputPlaceholder: 'กรอกรหัสนักเรียน (เช่น 6601)',
-                showCancelButton: true,
-                confirmButtonText: 'ถัดไป ➡️',
-                cancelButtonText: 'ยกเลิก',
-                confirmButtonColor: '#2563eb',
-                cancelButtonColor: '#64748b',
-                inputValidator: (value) => {
-                    if (!value || !value.trim()) {
-                        return '⚠️ กรุณาระบุรหัสนักเรียนเพื่อยืนยันตัวตน';
-                    }
-                    const cleanInput = value.trim();
-                    const cleanTarget = String(studentId).trim();
-                    if (cleanInput !== cleanTarget && Number(cleanInput) !== Number(cleanTarget)) {
-                        return `❌ รหัสนักเรียนไม่ถูกต้อง (ไม่ตรงกับข้อมูลของ ${studentName})`;
-                    }
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    promptNewPin(studentId, studentName);
-                }
+                title: 'กำลังค้นหาข้อมูล...',
+                text: 'กรุณารอสักครู่',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
             });
+
+            try {
+                // 1. ค้นหาจาก direct key Students/${studentId}
+                let targetKey = studentId;
+                let snapshot = await db.ref(`Students/${studentId}`).once('value');
+                let student = snapshot.val();
+
+                // 2. ค้นหาจาก field Student_ID เผื่อกรณีคีย์เป็น push ID
+                if (!student) {
+                    const allSnap = await db.ref('Students').once('value');
+                    const allVal = allSnap.val() || {};
+                    const matchedKey = Object.keys(allVal).find(k => {
+                        const s = allVal[k];
+                        return String(s.Student_ID || s.student_id || k).trim() === studentId;
+                    });
+                    if (matchedKey) {
+                        student = allVal[matchedKey];
+                        targetKey = matchedKey;
+                    }
+                }
+
+                if (!student) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ไม่พบรหัสนักเรียน',
+                        text: `ไม่พบข้อมูลของรหัสนักเรียน "${studentId}" ในระบบ กรุณาตรวจสอบอีกครั้งหรือติดต่อครูผู้สอนครับ`,
+                        confirmButtonColor: '#ef4444',
+                        confirmButtonText: 'ตกลง'
+                    });
+                    return;
+                }
+
+                const studentName = student.Name_Surname || student.name || 'นักเรียน';
+                promptNewPin(targetKey, studentName);
+            } catch(e) {
+                console.error('Forgot PIN lookup error:', e);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'การเชื่อมต่อขัดข้อง',
+                    text: 'ไม่สามารถติดต่อฐานข้อมูลได้ กรุณาลองใหม่อีกครั้งครับ',
+                    confirmButtonColor: '#ef4444'
+                });
+            }
         }
 
         function promptNewPin(studentId, studentName) {
             Swal.fire({
-                title: '🔑 ตั้งรหัส PIN 4 หลักใหม่',
-                html: `กำหนดรหัส PIN ใหม่สำหรับ: <strong>${studentName}</strong>`,
+                title: '🔑 กำหนดรหัส PIN ใหม่',
+                html: `กำหนดรหัส PIN ใหม่สำหรับ: <strong style="color: #2563eb;">${studentName}</strong>`,
                 input: 'text',
                 inputValue: '1234',
                 inputAttributes: {
-                    maxlength: 4,
+                    maxlength: 10,
                     pattern: '[0-9]*',
                     inputmode: 'numeric',
-                    style: 'text-align: center; font-size: 1.5rem; letter-spacing: 4px; font-weight: 700; color: #2563eb;'
+                    style: 'text-align: center; font-size: 1.4rem; letter-spacing: 4px; font-weight: 700; color: #2563eb;'
                 },
                 showCancelButton: true,
                 confirmButtonText: '💾 บันทึก PIN ใหม่',
@@ -1029,15 +1066,15 @@
                 confirmButtonColor: '#10b981',
                 cancelButtonColor: '#64748b',
                 inputValidator: (val) => {
-                    if (!val || val.trim().length !== 4 || isNaN(val.trim())) {
-                        return '⚠️ กรุณาระบุรหัส PIN เป็นตัวเลข 4 หลักเท่านั้น (เช่น 1234)';
+                    if (!val || val.trim().length < 4 || isNaN(val.trim())) {
+                        return '⚠️ กรุณาระบุรหัส PIN เป็นตัวเลขอย่างน้อย 4 หลัก (เช่น 1234)';
                     }
                 }
             }).then(async (res) => {
                 if (res.isConfirmed && res.value) {
                     const newPin = res.value.trim();
                     Swal.fire({
-                        title: 'กำลังรีเซ็ตรหัส PIN...',
+                        title: 'กำลังบันทึกรหัส PIN ใหม่...',
                         text: 'กรุณารอสักครู่',
                         allowOutsideClick: false,
                         didOpen: () => { Swal.showLoading(); }
@@ -1046,9 +1083,12 @@
                     try {
                         await db.ref(`Students/${studentId}`).update({ PIN: newPin, pin: newPin });
                         document.getElementById('pinCode').value = newPin;
+                        if (document.getElementById('studentIdInput')) {
+                            document.getElementById('studentIdInput').value = studentId;
+                        }
                         Swal.fire({
                             icon: 'success',
-                            title: 'รีเซ็ตรหัส PIN สำเร็จ! 🎉',
+                            title: 'บันทึกรหัส PIN ใหม่สำเร็จ! 🎉',
                             text: `รหัส PIN ใหม่ของคุณคือ "${newPin}" (ระบบเติมรหัสให้แล้ว กดปุ่มเข้าสู่ระบบได้เลย)`,
                             confirmButtonColor: '#10b981'
                         });
@@ -1056,7 +1096,8 @@
                         Swal.fire({
                             icon: 'error',
                             title: 'การเชื่อมต่อขัดข้อง',
-                            text: 'ไม่สามารถเปลี่ยนรหัส PIN ได้ กรุณาลองใหม่อีกครั้ง'
+                            text: 'ไม่สามารถเปลี่ยนรหัส PIN ได้ กรุณาลองใหม่อีกครั้งครับ',
+                            confirmButtonColor: '#ef4444'
                         });
                     }
                 }
@@ -1066,21 +1107,21 @@
         // =========================================
         // 4. Form Submission Handlers
         // =========================================
-        // นักเรียน เข้าสู่ระบบ
+        // นักเรียน เข้าสู่ระบบ (Direct Student ID + PIN Verification)
         document.getElementById('studentLoginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const studentSelect = document.getElementById('studentSelect');
+            const studentIdInput = document.getElementById('studentIdInput');
             const pinCode = document.getElementById('pinCode');
             const loadingUI = document.getElementById('loadingUI');
 
-            const studentId = studentSelect.value;
-            const pin = pinCode.value;
+            const rawId = (studentIdInput?.value || '').trim();
+            const pin = (pinCode?.value || '').trim();
 
-            if (!studentId || !pin) {
+            if (!rawId || !pin) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'ข้อมูลไม่ครบถ้วน',
-                    text: 'กรุณาเลือกชื่อนักเรียนและกรอกรหัส PIN ให้ครบถ้วนครับ',
+                    text: 'กรุณากรอกรหัสนักเรียนและรหัส PIN ให้ครบถ้วนครับ',
                     confirmButtonColor: '#2563eb',
                     confirmButtonText: 'ตกลง'
                 });
@@ -1090,19 +1131,48 @@
             loadingUI.style.display = 'flex';
 
             try {
-                const snapshot = await db.ref(`Students/${studentId}`).once('value');
-                const student = snapshot.val();
+                // 1. ค้นหาจาก Students/${rawId} โดยตรง
+                let targetKey = rawId;
+                let snapshot = await db.ref(`Students/${rawId}`).once('value');
+                let student = snapshot.val();
 
-                const dbPin = student ? String(student.PIN || student.pin || '') : '';
-                if (student && dbPin === String(pin)) {
-                    const selectedOpt = studentSelect.options[studentSelect.selectedIndex];
+                // 2. ค้นหาจาก field Student_ID เผื่อกรณี key ใน Firebase ไม่ตรงกับรหัสนักเรียน
+                if (!student) {
+                    const allSnap = await db.ref('Students').once('value');
+                    const allVal = allSnap.val() || {};
+                    const matchedKey = Object.keys(allVal).find(k => {
+                        const s = allVal[k];
+                        return String(s.Student_ID || s.student_id || k).trim() === rawId;
+                    });
+                    if (matchedKey) {
+                        student = allVal[matchedKey];
+                        targetKey = matchedKey;
+                    }
+                }
+
+                if (!student) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'ไม่พบรหัสนักเรียน',
+                        text: `ไม่พบรหัสนักเรียน "${rawId}" ในระบบ กรุณาตรวจสอบรหัสอีกครั้งหรือติดต่อครูผู้สอนครับ`,
+                        confirmButtonColor: '#ef4444',
+                        confirmButtonText: 'ลองอีกครั้ง'
+                    });
+                    return;
+                }
+
+                // ตรวจสอบ PIN (รองรับทั้ง PIN, pin, Password, password หรือ default 1234)
+                const dbPin = String(student.PIN || student.pin || student.Password || student.password || '1234').trim();
+                if (dbPin === String(pin)) {
+                    const studentRoom = student.Room || student.room || '';
+                    const studentSubject = student.Subject_ID || student.subject_id || studentRoom;
                     const studentInfo = {
-                        id: studentId,
-                        Student_ID: studentId,
-                        name: student.Name_Surname || (selectedOpt ? selectedOpt.getAttribute('data-name') || selectedOpt.textContent : ''),
-                        no: student.No || (selectedOpt ? selectedOpt.getAttribute('data-no') || '' : ''),
-                        room: student.Room || document.getElementById('subjectSelect').value,
-                        subject_id: document.getElementById('subjectSelect').value
+                        id: targetKey,
+                        Student_ID: student.Student_ID || targetKey,
+                        name: student.Name_Surname || student.name || 'นักเรียน',
+                        no: student.No || student.no || '',
+                        room: studentRoom,
+                        subject_id: studentSubject
                     };
                     localStorage.setItem('studentData', JSON.stringify(studentInfo));
                     window.location.href = 'dashboard.html';
@@ -1111,8 +1181,8 @@
                     pinCode.focus();
                     Swal.fire({
                         icon: 'error',
-                        title: 'ยืนยันตัวตนไม่สำเร็จ',
-                        text: 'รหัสยืนยันตัวตน (PIN) ไม่ถูกต้อง กรุณาลองใหม่อีกครั้งครับ',
+                        title: 'รหัสผ่านไม่ถูกต้อง',
+                        text: 'รหัสผ่านยืนยันตัวตน (PIN) ไม่ถูกต้อง กรุณาลองใหม่อีกครั้งครับ (หากยังไม่เคยเปลี่ยน รหัสเริ่มต้นคือ 1234)',
                         confirmButtonColor: '#ef4444',
                         confirmButtonText: 'ลองอีกครั้ง'
                     });
