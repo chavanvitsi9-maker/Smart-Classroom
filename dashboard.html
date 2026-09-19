@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Classroom | แดชบอร์ดนักเรียน</title>
-    <!-- Preconnect & Fonts for High Speed Performance -->
+    <title>Smart Classroom | แดชบอร์ดนักเรียน (Cadet Terminal)</title>
+    <!-- Preconnect & Google Fonts: Futuristic Orbitron, Rajdhani, Chakra Petch & Prompt -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://script.google.com">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,600;0,700;1,400;1,700&family=Inter:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800;900&family=Prompt:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
     
     <!-- Firebase SDK Compat & Config -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -17,347 +17,533 @@
 
     <style>
         /* =========================================
-           1. โทนสีและภาพรวม (Light & Pastel Blue Theme)
+           1. SCI-FI DESIGN TOKENS & DEEP SPACE COLOR PALETTE
+           ========================================= */
+        :root {
+            --bg-base: #000000;
+            --bg-deep: #030712;
+            --bg-navy-900: #050b18;
+            --bg-navy-800: #0a1428;
+            --bg-card: rgba(8, 17, 36, 0.85);
+            --bg-card-hover: rgba(14, 28, 62, 0.95);
+            --bg-input: rgba(3, 8, 20, 0.92);
+            
+            --neon-cyan: #00E5FF;
+            --neon-blue: #38BDF8;
+            --neon-yellow: #FACC15;
+            --neon-green: #10B981;
+            --neon-red: #F43F5E;
+            --neon-purple: #A855F7;
+
+            --glow-cyan: 0 0 20px rgba(0, 229, 255, 0.5);
+            --glow-cyan-lg: 0 0 35px rgba(0, 229, 255, 0.75);
+            --glow-yellow: 0 0 20px rgba(250, 204, 21, 0.5);
+            --glow-green: 0 0 20px rgba(16, 185, 129, 0.5);
+            --glow-red: 0 0 20px rgba(244, 63, 94, 0.5);
+
+            --border-hud: rgba(0, 229, 255, 0.25);
+            --border-hud-bright: rgba(0, 229, 255, 0.7);
+            --border-gold: rgba(250, 204, 21, 0.5);
+            --border-green: rgba(16, 185, 129, 0.5);
+
+            --text-main: #FFFFFF;
+            --text-sub: #CBD5E1;
+            --text-muted: #94A3B8;
+            --text-cyan: #67e8f9;
+
+            --font-display: 'Orbitron', 'Chakra Petch', sans-serif;
+            --font-hud: 'Rajdhani', 'Chakra Petch', sans-serif;
+            --font-body: 'Prompt', 'Inter', sans-serif;
+        }
+
+        /* =========================================
+           2. GLOBAL RESETS & DEEP SPACE BACKGROUND
            ========================================= */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Sarabun', sans-serif;
+            font-family: var(--font-body);
         }
 
         body {
-            background-color: #f8fafc;
-            background: 
-                radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.22) 0px, transparent 50%),
-                radial-gradient(at 85% 20%, rgba(6, 182, 212, 0.22) 0px, transparent 50%),
-                radial-gradient(at 80% 80%, rgba(244, 63, 94, 0.18) 0px, transparent 50%),
-                radial-gradient(at 20% 85%, rgba(16, 185, 129, 0.18) 0px, transparent 50%),
-                linear-gradient(135deg, #f0f5ff 0%, #f5f3ff 35%, #fff1f2 70%, #f0fdf4 100%);
+            background-color: var(--bg-base);
             min-height: 100vh;
-            color: #0f172a;
-            padding-bottom: 50px;
+            color: var(--text-main);
+            padding-bottom: 60px;
             position: relative;
             overflow-x: hidden;
-            background-attachment: fixed;
         }
 
-        /* 4 Dynamic Floating Colorful 3D Glowing Orbs */
-        .orb-1 {
-            position: fixed;
-            top: -12vw;
-            left: -12vw;
-            width: 55vw;
-            height: 55vw;
-            max-width: 650px;
-            max-height: 650px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.42) 0%, rgba(168, 85, 247, 0.25) 50%, transparent 70%);
-            filter: blur(75px);
-            border-radius: 50%;
-            z-index: -2;
-            pointer-events: none;
-            animation: floatOrb1 18s ease-in-out infinite alternate;
-        }
-
-        .orb-2 {
-            position: fixed;
-            top: -10vw;
-            right: -10vw;
-            width: 50vw;
-            height: 50vw;
-            max-width: 600px;
-            max-height: 600px;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.4) 0%, rgba(59, 130, 246, 0.22) 50%, transparent 70%);
-            filter: blur(80px);
-            border-radius: 50%;
-            z-index: -2;
-            pointer-events: none;
-            animation: floatOrb2 20s ease-in-out infinite alternate;
-        }
-
-        .orb-3 {
-            position: fixed;
-            bottom: -12vw;
-            right: -10vw;
-            width: 55vw;
-            height: 55vw;
-            max-width: 650px;
-            max-height: 650px;
-            background: radial-gradient(circle, rgba(244, 63, 94, 0.35) 0%, rgba(249, 115, 22, 0.2) 50%, transparent 70%);
-            filter: blur(85px);
-            border-radius: 50%;
-            z-index: -2;
-            pointer-events: none;
-            animation: floatOrb3 22s ease-in-out infinite alternate;
-        }
-
-        .orb-4 {
-            position: fixed;
-            bottom: -10vw;
-            left: -10vw;
-            width: 50vw;
-            height: 50vw;
-            max-width: 600px;
-            max-height: 600px;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.38) 0%, rgba(52, 211, 153, 0.2) 50%, transparent 70%);
-            filter: blur(75px);
-            border-radius: 50%;
-            z-index: -2;
-            pointer-events: none;
-            animation: floatOrb4 19s ease-in-out infinite alternate;
-        }
-
-        @keyframes floatOrb1 {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(70px, 45px) scale(1.12); }
-            100% { transform: translate(-35px, 85px) scale(0.92); }
-        }
-
-        @keyframes floatOrb2 {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(-60px, 50px) scale(1.15); }
-            100% { transform: translate(40px, -30px) scale(0.9); }
-        }
-
-        @keyframes floatOrb3 {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(-50px, -60px) scale(1.1); }
-            100% { transform: translate(50px, -35px) scale(0.95); }
-        }
-
-        @keyframes floatOrb4 {
-            0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(65px, -45px) scale(1.14); }
-            100% { transform: translate(-30px, -60px) scale(0.92); }
-        }
-
-        /* Modern 3D Tech Grid & Light Mesh Overlay */
-        .bg-grid-overlay {
+        /* Interactive Starfield & Hyperspace Canvas (Identical to index.html & teacher.html) */
+        #spaceCanvas {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-image: 
-                radial-gradient(rgba(99, 102, 241, 0.16) 1.5px, transparent 1.5px),
-                radial-gradient(rgba(99, 102, 241, 0.16) 1.5px, transparent 1.5px);
-            background-size: 32px 32px;
-            background-position: 0 0, 16px 16px;
-            z-index: -1;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
-            mask-image: radial-gradient(circle at 50% 40%, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 80%, transparent 100%);
-            -webkit-mask-image: radial-gradient(circle at 50% 40%, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 80%, transparent 100%);
+            z-index: 0;
         }
 
+        /* Retro Arcade CRT Scanline & Hex Grid Overlays */
+        .crt-scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+            z-index: 99;
+            opacity: 0.65;
+        }
+
+        .bg-grid-overlay, .hex-grid-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 229, 255, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.035) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .ambient-glow {
+            position: fixed;
+            width: 500px; height: 500px;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .glow-1 { top: -150px; left: 10%; background: rgba(0, 229, 255, 0.16); }
+        .glow-2 { bottom: -120px; right: 10%; background: rgba(56, 189, 248, 0.12); }
+
+        /* Legacy orbs compatibility */
+        .orb-1, .orb-2, .orb-3, .orb-4 { display: none; }
+
         /* =========================================
-           2. แถบ Header ด้านบนสุด
+           3. NAVBAR (CADET FLIGHT COCKPIT HUD)
            ========================================= */
         .navbar {
-            background: #ffffff;
+            background: rgba(3, 8, 20, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             padding: 16px 24px;
-            box-shadow: 0 10px 25px rgba(162, 190, 222, 0.3);
-            border-bottom: 3px solid #e0eefc;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 229, 255, 0.15);
+            border-bottom: 2px solid var(--border-hud);
             position: sticky;
             top: 0;
             z-index: 100;
         }
 
         .navbar-container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 14px;
         }
 
         .user-info-group {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 16px;
         }
 
         .avatar {
-            width: 48px;
-            height: 48px;
-            background: #e0f0ff;
-            border-radius: 50%;
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.2) 0%, rgba(56, 189, 248, 0.1) 100%);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
-            border: 2px solid #89bdf2;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            font-size: 1.8rem;
+            border: 1.5px solid var(--neon-cyan);
+            box-shadow: 0 0 16px rgba(0, 229, 255, 0.4), inset 0 0 10px rgba(0, 229, 255, 0.2);
+            animation: pulseAvatar 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseAvatar {
+            0% { box-shadow: 0 0 12px rgba(0, 229, 255, 0.3); }
+            100% { box-shadow: 0 0 22px rgba(0, 229, 255, 0.6); }
         }
 
         .user-text h1 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #5c9ce6;
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #ffffff;
             line-height: 1.2;
+            letter-spacing: 0.04em;
+            text-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
         }
 
         .user-text p {
-            font-size: 0.9rem;
-            color: #8fa6c1;
-            font-weight: 500;
+            font-family: var(--font-hud);
+            font-size: 0.95rem;
+            color: var(--neon-cyan);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-top: 2px;
         }
 
         .btn-logout {
-            background: #fff0f0;
-            color: #e65c5c;
-            border: 2px solid #ffd8d8;
-            padding: 8px 18px;
-            border-radius: 16px;
-            font-size: 0.95rem;
-            font-weight: 600;
+            background: rgba(244, 63, 94, 0.12);
+            color: #fca5a5;
+            border: 1.5px solid rgba(244, 63, 94, 0.4);
+            padding: 9px 20px;
+            border-radius: 14px;
+            font-family: var(--font-hud);
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             align-items: center;
-            gap: 6px;
-            box-shadow: 0 4px 0 #fca5a5;
+            gap: 8px;
+            box-shadow: 0 0 12px rgba(244, 63, 94, 0.2);
         }
 
         .btn-logout:hover {
-            background: #ffe4e4;
+            background: rgba(244, 63, 94, 0.25);
+            border-color: var(--neon-red);
+            color: #ffffff;
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.5);
+            transform: translateY(-2px);
         }
 
         .btn-logout:active {
-            transform: translateY(4px);
-            box-shadow: 0 0px 0 #fca5a5;
+            transform: translateY(1px);
         }
 
         /* =========================================
-           3. โครงสร้างหลัก (Main Content)
+           4. MAIN CONTENT & COCKPIT CONTAINER
            ========================================= */
         .container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 30px auto;
             padding: 0 20px;
+            position: relative;
+            z-index: 2;
         }
 
-        .section-header {
-            margin-bottom: 24px;
+        /* 3D Student KPI Summary Cards (Telemetry Array) */
+        .stats-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card-3d {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px 22px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 16px;
+            border: 1.5px solid var(--border-hud);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(0, 229, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
         }
 
-        .section-header h2 {
-            font-size: 1.4rem;
+        .kpi-card-3d::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--card-accent, var(--neon-cyan)), transparent);
+        }
+
+        .kpi-card-3d:hover {
+            transform: translateY(-4px);
+            border-color: var(--card-accent, var(--neon-cyan));
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 229, 255, 0.25);
+        }
+
+        .kpi-card-score { --card-accent: var(--neon-yellow); border-color: rgba(250, 204, 21, 0.35); }
+        .kpi-card-score:hover { border-color: var(--neon-yellow); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), var(--glow-yellow); }
+        
+        .kpi-card-submitted { --card-accent: var(--neon-green); border-color: rgba(16, 185, 129, 0.35); }
+        .kpi-card-submitted:hover { border-color: var(--neon-green); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), var(--glow-green); }
+
+        .kpi-card-pending { --card-accent: #f97316; border-color: rgba(249, 115, 22, 0.35); }
+        .kpi-card-pending:hover { border-color: #f97316; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 22px rgba(249, 115, 22, 0.5); }
+
+        .kpi-card-quiz { --card-accent: var(--neon-cyan); border-color: rgba(0, 229, 255, 0.35); }
+        .kpi-card-quiz:hover { border-color: var(--neon-cyan); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), var(--glow-cyan); }
+
+        .kpi-icon {
+            font-size: 2.2rem;
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            background: rgba(3, 8, 20, 0.8);
+            border: 1.5px solid var(--card-accent, var(--border-hud));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: inset 0 0 12px rgba(0, 229, 255, 0.15);
+        }
+
+        .kpi-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .kpi-label {
+            font-family: var(--font-hud);
+            font-size: 0.85rem;
+            letter-spacing: 0.06em;
+            color: var(--text-sub);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .kpi-val {
+            font-family: var(--font-display);
+            font-size: 1.45rem;
             font-weight: 700;
-            color: #4a6583;
+            color: #ffffff;
+            letter-spacing: 0.03em;
+            margin-top: 2px;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+        }
+
+        /* Section Header & Segmented Tabs */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .student-tabs-wrapper {
+            background: rgba(3, 8, 20, 0.9);
+            padding: 6px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+            border: 1.5px solid var(--border-hud);
+            display: flex;
+            gap: 8px;
+            backdrop-filter: blur(12px);
+        }
+
+        .tab-btn {
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-family: var(--font-hud);
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            color: var(--text-sub);
+            background: transparent;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: var(--neon-cyan);
+            background: rgba(0, 229, 255, 0.08);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.25) 0%, rgba(3, 105, 161, 0.45) 100%);
+            color: #ffffff;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 16px rgba(0, 229, 255, 0.4);
+        }
+
+        .tab-badge {
+            background: var(--neon-red);
+            color: #ffffff;
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+            box-shadow: 0 0 8px rgba(244, 63, 94, 0.6);
+        }
+
+        .tab-btn.active .tab-badge {
+            background: #ffffff;
+            color: #030712;
         }
 
         .room-badge {
-            background: #e0f0ff;
-            color: #5c9ce6;
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border: 1px solid #b3d7ff;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(59, 130, 246, 0.25) 100%);
+            color: #e2e8f0;
+            border: 1.5px solid rgba(168, 85, 247, 0.5);
+            padding: 8px 18px;
+            border-radius: 16px;
+            font-family: var(--font-hud);
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.05em;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         /* =========================================
-           4. การ์ดรายการชิ้นงาน 3D
+           5. ASSIGNMENT CARDS (ACTIVE QUESTS)
            ========================================= */
         .assignment-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 28px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 26px;
         }
 
         .assignment-card {
-            background: #ffffff;
-            border-radius: 28px;
-            padding: 24px;
-            box-shadow: 
-                0 12px 28px rgba(162, 190, 222, 0.35),
-                inset 0 -6px 0 rgba(228, 240, 251, 0.8);
-            border: 2px solid #ffffff;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 26px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(0, 229, 255, 0.03);
+            border: 1.5px solid var(--border-hud);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
+            overflow: hidden;
             animation: bounceInUp 0.5s ease forwards;
         }
 
+        .assignment-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        }
+
         .assignment-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 32px rgba(162, 190, 222, 0.45);
+            transform: translateY(-5px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85), var(--glow-cyan);
+        }
+
+        .assignment-card.submitted-card {
+            border-color: rgba(16, 185, 129, 0.45);
+            background: rgba(6, 20, 32, 0.9);
+        }
+
+        .assignment-card.submitted-card::before {
+            background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
+        }
+
+        .assignment-card.submitted-card:hover {
+            border-color: var(--neon-green);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85), var(--glow-green);
         }
 
         .card-top {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         .card-badges {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 6px;
-            margin-bottom: 12px;
+            gap: 8px;
+            margin-bottom: 14px;
             flex-wrap: wrap;
         }
 
         .badge-subject {
-            background: #eef6ff;
-            color: #5c9ce6;
+            background: rgba(0, 229, 255, 0.12);
+            color: var(--neon-cyan);
+            font-family: var(--font-hud);
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             padding: 4px 12px;
             border-radius: 12px;
-            border: 1px solid #d0e4f7;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            letter-spacing: 0.03em;
         }
 
         .badge-score {
-            background: #fff8eb;
-            color: #d97706;
+            background: rgba(250, 204, 21, 0.15);
+            color: var(--neon-yellow);
+            font-family: var(--font-display);
             font-size: 0.85rem;
             font-weight: 700;
             padding: 4px 12px;
             border-radius: 12px;
-            border: 1px solid #fef3c7;
+            border: 1px solid rgba(250, 204, 21, 0.35);
+            box-shadow: 0 0 10px rgba(250, 204, 21, 0.2);
         }
 
         .badge-status {
+            font-family: var(--font-hud);
             font-size: 0.85rem;
             font-weight: 700;
             padding: 4px 12px;
             border-radius: 12px;
+            letter-spacing: 0.03em;
         }
 
         .badge-status.submitted {
-            background: #e6f4ea;
-            color: #1b803a;
-            border: 1px solid #b7ebc5;
+            background: rgba(16, 185, 129, 0.18);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
         }
 
         .badge-status.pending {
-            background: #fff8eb;
-            color: #d97706;
-            border: 1px solid #fef3c7;
+            background: rgba(249, 115, 22, 0.18);
+            color: #fb923c;
+            border: 1px solid rgba(249, 115, 22, 0.45);
+            box-shadow: 0 0 10px rgba(249, 115, 22, 0.2);
         }
 
-        .submitted-card {
-            border: 2px solid #b7ebc5 !important;
-            background: #fcfdfe !important;
+        .assignment-title {
+            font-family: var(--font-body);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            transition: color 0.2s;
+        }
+
+        .assignment-card:hover .assignment-title {
+            color: var(--neon-cyan);
+        }
+
+        .assignment-desc {
+            font-size: 0.95rem;
+            color: var(--text-sub);
+            line-height: 1.6;
+            margin-bottom: 18px;
         }
 
         .submission-info-banner {
-            background: #f0faf4;
-            border: 1px solid #d1fae5;
-            color: #2f855a;
-            font-size: 0.85rem;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            color: #6ee7b7;
+            font-size: 0.88rem;
             font-weight: 600;
-            padding: 8px 12px;
+            padding: 10px 14px;
             border-radius: 14px;
             margin-bottom: 14px;
             display: flex;
@@ -368,57 +554,50 @@
         }
 
         .submission-info-banner a {
-            color: #2563eb;
+            color: var(--neon-cyan);
             text-decoration: none;
             font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
         }
 
         .submission-info-banner a:hover {
             text-decoration: underline;
-        }
-
-        .assignment-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #334155;
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-
-        .assignment-desc {
-            font-size: 0.95rem;
-            color: #64748b;
-            line-height: 1.5;
-            margin-bottom: 16px;
+            text-shadow: 0 0 8px var(--neon-cyan);
         }
 
         .due-date {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.9rem;
-            color: #e11d48;
+            gap: 8px;
+            font-family: var(--font-hud);
+            font-size: 0.92rem;
+            color: #fca5a5;
             font-weight: 600;
-            background: #fff1f2;
+            background: rgba(244, 63, 94, 0.12);
             padding: 8px 14px;
-            border-radius: 14px;
+            border-radius: 12px;
             margin-bottom: 18px;
-            border: 1px solid #ffe4e6;
+            border: 1px solid rgba(244, 63, 94, 0.3);
         }
 
-        /* ปุ่มกด 3D ส่งงาน */
+        /* Cockpit Mission Launch Buttons */
         .btn-submit-work {
             width: 100%;
-            min-height: 48px;
-            background: #6ab0f3;
-            border: none;
-            border-radius: 18px;
-            color: white;
-            font-size: 1.05rem;
-            font-weight: 700;
+            min-height: 50px;
+            background: linear-gradient(135deg, #00E5FF 0%, #0284c7 100%);
+            border: 1px solid rgba(0, 229, 255, 0.6);
+            border-radius: 16px;
+            color: #030712;
+            font-family: var(--font-hud);
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
             cursor: pointer;
-            box-shadow: 0 5px 0 #4a90e2, 0 10px 15px rgba(106, 176, 243, 0.3);
-            transition: all 0.1s ease;
+            box-shadow: 0 6px 20px rgba(0, 229, 255, 0.4);
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -426,97 +605,66 @@
         }
 
         .btn-submit-work:hover {
-            background: #7bbaff;
+            background: linear-gradient(135deg, #38bdf8 0%, #00e5ff 100%);
+            box-shadow: 0 8px 25px rgba(0, 229, 255, 0.7);
+            transform: translateY(-2px);
         }
 
         .btn-submit-work:active {
-            transform: translateY(5px);
-            box-shadow: 0 0px 0 #4a90e2;
+            transform: translateY(2px);
+            box-shadow: 0 2px 10px rgba(0, 229, 255, 0.4);
         }
 
-        /* ปุ่ม 3D สำหรับชิ้นงานที่ส่งแล้ว */
         .btn-submit-work.submitted {
-            background: #48bb78;
-            box-shadow: 0 5px 0 #2f855a, 0 10px 15px rgba(72, 187, 120, 0.3);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.45) 100%);
+            border-color: rgba(16, 185, 129, 0.6);
+            color: #ffffff;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
         }
 
         .btn-submit-work.submitted:hover {
-            background: #38a169;
-        }
-
-        .btn-submit-work.submitted:active {
-            transform: translateY(5px);
-            box-shadow: 0 0px 0 #2f855a;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.45) 0%, rgba(5, 150, 105, 0.65) 100%);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
         }
 
         /* =========================================
-           Tabs & Quiz Cards (Option A Segmented UI)
+           6. QUIZ CARDS (SIMULATION PROTOCOLS)
            ========================================= */
-        .tab-btn {
-            padding: 10px 22px;
-            border-radius: 16px;
-            font-size: 0.98rem;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: #64748b;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tab-btn:hover {
-            color: #5c9ce6;
-            background: #f0f7ff;
-        }
-
-        .tab-btn.active {
-            background: #5c9ce6;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(92, 156, 230, 0.4);
-        }
-
-        .tab-badge {
-            background: #ef4444;
-            color: #ffffff;
-            font-size: 0.75rem;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 700;
-        }
-
-        .tab-btn.active .tab-badge {
-            background: #ffffff;
-            color: #ef4444;
-        }
-
-        /* Quiz Cards 3D Design */
         .quiz-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 28px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 26px;
         }
 
         .quiz-card {
-            background: #ffffff;
-            border-radius: 28px;
-            padding: 28px;
-            box-shadow: 
-                0 14px 32px rgba(162, 190, 222, 0.3),
-                inset 0 -6px 0 rgba(228, 240, 251, 0.8);
-            border: 2px solid #e0eefc;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 26px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+            border: 1.5px solid var(--border-hud);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: all 0.25s ease;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            position: relative;
+            overflow: hidden;
             animation: bounceInUp 0.5s ease forwards;
         }
 
+        .quiz-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+        }
+
         .quiz-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 40px rgba(147, 197, 253, 0.45);
+            transform: translateY(-5px);
+            border-color: var(--neon-purple);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(168, 85, 247, 0.35);
         }
 
         .quiz-card-header {
@@ -528,32 +676,32 @@
 
         .quiz-icon {
             font-size: 1.8rem;
-            background: #eff6ff;
-            width: 52px;
-            height: 52px;
-            border-radius: 18px;
+            background: rgba(168, 85, 247, 0.15);
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid #bfdbfe;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.2);
         }
 
         .quiz-status-badge {
-            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-            color: #047857;
+            background: rgba(16, 185, 129, 0.18);
+            color: #34d399;
+            font-family: var(--font-hud);
             font-size: 0.85rem;
             font-weight: 700;
             padding: 6px 14px;
-            border-radius: 14px;
-            border: 1px solid #a7f3d0;
-            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.12);
+            border-radius: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.4);
         }
 
         .quiz-title {
             font-size: 1.25rem;
             font-weight: 700;
-            color: #1e293b;
+            color: #ffffff;
             margin-bottom: 16px;
             line-height: 1.45;
         }
@@ -562,42 +710,45 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            background: #f8fafc;
+            background: rgba(3, 8, 20, 0.7);
             padding: 14px 18px;
-            border-radius: 20px;
-            border: 1.5px solid #e2e8f0;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 229, 255, 0.15);
             margin-bottom: 22px;
         }
 
         .quiz-meta-item {
             display: flex;
             flex-direction: column;
+            font-family: var(--font-hud);
             font-size: 0.85rem;
-            color: #64748b;
+            color: var(--text-sub);
         }
 
         .quiz-meta-item strong {
-            font-size: 1.05rem;
-            color: #2563eb;
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--neon-cyan);
             font-weight: 700;
             margin-top: 4px;
         }
 
-        /* Premium 3D Blue Button */
         .btn-start-quiz {
             width: 100%;
-            min-height: 54px;
+            min-height: 52px;
             padding: 12px 20px;
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            border: none;
-            border-radius: 20px;
-            color: white;
-            font-size: 1rem;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.3) 0%, rgba(59, 130, 246, 0.4) 100%);
+            border: 1.5px solid var(--neon-purple);
+            border-radius: 16px;
+            color: #ffffff;
+            font-family: var(--font-hud);
+            font-size: 1.1rem;
             font-weight: 700;
+            letter-spacing: 0.05em;
             cursor: pointer;
             text-decoration: none;
-            box-shadow: 0 6px 0 #1e40af, 0 12px 24px rgba(37, 99, 235, 0.35);
-            transition: all 0.15s ease;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -605,190 +756,215 @@
             gap: 8px;
         }
 
-        .btn-start-quiz .btn-text {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-start-quiz .btn-arrow {
-            font-size: 1.2rem;
-            line-height: 1;
-            transition: transform 0.2s ease;
-            flex-shrink: 0;
-        }
-
         .btn-start-quiz:hover {
-            background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.5) 0%, rgba(59, 130, 246, 0.6) 100%);
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.6);
             transform: translateY(-2px);
-            box-shadow: 0 8px 0 #1e40af, 0 16px 28px rgba(37, 99, 235, 0.45);
         }
 
         .btn-start-quiz:hover .btn-arrow {
             transform: translateX(4px);
         }
 
-        .btn-start-quiz:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #1e40af;
-        }
-
         /* =========================================
-           5. สถานะว่างเปล่าและตัวโหลด (Loading & Empty)
+           7. STATUS BOX & EMPTY STATE
            ========================================= */
         .status-box {
-            background: #ffffff;
-            border-radius: 28px;
-            padding: 40px 20px;
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 46px 20px;
             text-align: center;
-            box-shadow: 0 12px 28px rgba(162, 190, 222, 0.3);
-            border: 2px solid #ffffff;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+            border: 1.5px solid var(--border-hud);
             grid-column: 1 / -1;
+            backdrop-filter: blur(12px);
         }
 
         .cute-spinner {
-            width: 50px;
-            height: 50px;
-            border: 6px solid #e0eefc;
-            border-top-color: #6ab0f3;
+            width: 52px;
+            height: 52px;
+            border: 4px solid rgba(0, 229, 255, 0.15);
+            border-top-color: var(--neon-cyan);
+            border-right-color: var(--neon-blue);
             border-radius: 50%;
-            animation: spin 1s infinite ease-in-out;
-            margin: 0 auto 16px auto;
+            animation: spin 0.9s infinite linear;
+            margin: 0 auto 18px auto;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
         }
 
         .status-box p {
-            font-size: 1.1rem;
-            color: #5c9ce6;
+            font-family: var(--font-hud);
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
             font-weight: 600;
-        }
-
-        /* Disabled & Loading Controls */
-        input:disabled, select:disabled, button:disabled {
-            background-color: #f1f5f9 !important;
-            color: #94a3b8 !important;
-            border-color: #cbd5e1 !important;
-            cursor: wait !important;
-            opacity: 0.75 !important;
-            box-shadow: none !important;
-        }
-
-        .is-loading {
-            animation: pulseLoadingBorder 1.5s infinite ease-in-out;
-        }
-
-        @keyframes pulseLoadingBorder {
-            0%, 100% { border-color: #93c5fd; }
-            50% { border-color: #3b82f6; }
+            letter-spacing: 0.04em;
         }
 
         /* =========================================
-           6. Popup Modal & Overlays 3D
+           8. COCKPIT MODALS & POPUPS
            ========================================= */
-        /* Tiered Z-Index Architecture for Modals & Overlays */
         .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(74, 101, 131, 0.4);
-            backdrop-filter: blur(6px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             z-index: 2000;
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
 
-        #submitModal {
-            z-index: 2000 !important;
-        }
-
-        #alertModal, #logoutModal {
-            z-index: 4000 !important;
-            background: rgba(15, 23, 42, 0.5) !important;
-        }
-
-        #loadingUI {
-            z-index: 5000 !important;
-        }
-
-        .swal2-container {
-            z-index: 10000 !important;
-        }
+        #submitModal { z-index: 2000 !important; }
+        #alertModal, #logoutModal { z-index: 4000 !important; }
+        #loadingUI { z-index: 5000 !important; }
 
         .modal-card {
-            background: #ffffff;
-            border-radius: 32px;
-            padding: 32px 28px;
+            background: rgba(6, 14, 34, 0.96);
+            border-radius: 28px;
+            padding: 34px 28px;
             width: 100%;
-            max-width: 420px;
+            max-width: 480px;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(90, 123, 156, 0.25), inset 0 -6px 0 rgba(228, 240, 251, 0.8);
-            border: 3px solid #ffffff;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(0, 229, 255, 0.25);
+            border: 1.5px solid var(--border-hud-bright);
             animation: modalPopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
         }
 
         .modal-icon-wrapper {
-            width: 70px;
-            height: 70px;
+            width: 68px;
+            height: 68px;
             margin: 0 auto 16px auto;
-            border-radius: 50%;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2.2rem;
-            box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .modal-icon-wrapper.info {
-            background: #eef6ff;
-            color: #5c9ce6;
-            border: 2px solid #d0e4f7;
+            background: rgba(0, 229, 255, 0.12);
+            border: 1.5px solid rgba(0, 229, 255, 0.4);
+            box-shadow: 0 0 16px rgba(0, 229, 255, 0.25);
         }
 
         .modal-icon-wrapper.success {
-            background: #f0faf4;
-            color: #48bb78;
-            border: 2px solid #d1fae5;
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.3);
         }
 
         .modal-icon-wrapper.error {
-            background: #fff0f0;
-            color: #e65c5c;
-            border: 2px solid #ffd8d8;
+            background: rgba(244, 63, 94, 0.15);
+            border-color: rgba(244, 63, 94, 0.5);
+            box-shadow: 0 0 16px rgba(244, 63, 94, 0.3);
         }
 
         .modal-icon-wrapper.warning {
-            background: #fffbe8;
-            color: #ed8936;
-            border: 2px solid #feebc8;
+            background: rgba(250, 204, 21, 0.15);
+            border-color: rgba(250, 204, 21, 0.5);
+            box-shadow: 0 0 16px rgba(250, 204, 21, 0.3);
         }
 
         .modal-title {
+            font-family: var(--font-display);
             font-size: 1.35rem;
             font-weight: 700;
             margin-bottom: 6px;
-            color: #334155;
+            color: #ffffff;
+            letter-spacing: 0.03em;
         }
 
         .modal-subtitle {
-            font-size: 0.95rem;
-            color: #5c9ce6;
+            font-family: var(--font-hud);
+            font-size: 1.05rem;
+            color: var(--neon-cyan);
             font-weight: 600;
             margin-bottom: 20px;
+            letter-spacing: 0.03em;
         }
 
-        /* ปุ่มเลือกไฟล์ 3D */
+        /* Rubric Briefing Container */
+        #modalRubricContainer {
+            background: rgba(3, 8, 20, 0.8) !important;
+            border: 1px dashed rgba(0, 229, 255, 0.4) !important;
+            border-radius: 14px;
+            padding: 14px !important;
+            margin: 12px 0 !important;
+            text-align: left;
+        }
+
+        #modalRubricContainer > div:first-child {
+            color: var(--neon-cyan) !important;
+            font-family: var(--font-hud);
+            font-size: 0.92rem !important;
+        }
+
+        #modalRubricText {
+            color: var(--text-sub) !important;
+            font-size: 0.88rem !important;
+            line-height: 1.5 !important;
+        }
+
+        /* Group Member Container */
+        #groupMemberContainer label {
+            color: var(--neon-cyan) !important;
+            font-family: var(--font-hud);
+            font-size: 0.92rem !important;
+        }
+
+        #groupMemberList {
+            background: rgba(3, 8, 20, 0.85) !important;
+            border: 1.5px solid rgba(0, 229, 255, 0.3) !important;
+            border-radius: 14px;
+            max-height: 140px;
+            overflow-y: auto;
+            padding: 12px !important;
+        }
+
+        #groupMemberList label {
+            color: var(--text-main) !important;
+        }
+
+        /* Drive Link Input */
+        #driveLinkContainer label {
+            color: var(--neon-cyan) !important;
+            font-family: var(--font-hud);
+            font-size: 0.92rem !important;
+        }
+
+        #studentDriveLinkInput {
+            background: rgba(2, 6, 18, 0.95) !important;
+            border: 1.5px solid rgba(0, 229, 255, 0.35) !important;
+            color: #ffffff !important;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        #studentDriveLinkInput:focus {
+            border-color: var(--neon-cyan) !important;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.4) !important;
+        }
+
+        /* File Upload Picker */
         .btn-choose-file {
             width: 100%;
             min-height: 52px;
-            background: #f4f9ff;
-            border: 2px dashed #89bdf2;
-            border-radius: 20px;
-            color: #4a6583;
-            font-size: 1.05rem;
-            font-weight: 600;
+            background: rgba(0, 229, 255, 0.06);
+            border: 2px dashed rgba(0, 229, 255, 0.4);
+            border-radius: 16px;
+            color: var(--neon-cyan);
+            font-family: var(--font-hud);
+            font-size: 1.1rem;
+            font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -799,18 +975,19 @@
         }
 
         .btn-choose-file:hover {
-            background: #eef6ff;
-            border-color: #5c9ce6;
-            color: #2563eb;
+            background: rgba(0, 229, 255, 0.14);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 16px rgba(0, 229, 255, 0.35);
         }
 
         .file-name-display {
-            font-size: 0.95rem;
-            color: #64748b;
-            background: #f8fafc;
+            font-family: var(--font-hud);
+            font-size: 0.92rem;
+            color: var(--text-sub);
+            background: rgba(2, 6, 18, 0.85);
             padding: 10px 14px;
-            border-radius: 14px;
-            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 229, 255, 0.2);
             margin-bottom: 22px;
             word-break: break-all;
         }
@@ -823,58 +1000,70 @@
         .btn-cancel {
             flex: 1;
             min-height: 48px;
-            background: #f1f5f9;
-            color: #64748b;
-            border: 2px solid #e2e8f0;
-            border-radius: 18px;
-            font-size: 1rem;
-            font-weight: 600;
+            background: rgba(15, 23, 42, 0.85);
+            color: var(--text-sub);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 14px;
+            font-family: var(--font-hud);
+            font-size: 1.05rem;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 0 #cbd5e1;
-            transition: all 0.1s ease;
+            transition: all 0.2s ease;
         }
 
-        .btn-cancel:hover { background: #e2e8f0; }
-        .btn-cancel:active { transform: translateY(4px); box-shadow: 0 0px 0 #cbd5e1; }
+        .btn-cancel:hover {
+            background: rgba(30, 41, 59, 0.95);
+            color: #ffffff;
+            border-color: rgba(148, 163, 184, 0.6);
+        }
 
         .btn-confirm-submit {
             flex: 1.5;
             min-height: 48px;
-            background: #6ab0f3;
-            color: white;
+            background: linear-gradient(135deg, #00E5FF 0%, #0284c7 100%);
+            color: #030712;
             border: none;
-            border-radius: 18px;
-            font-size: 1rem;
-            font-weight: 700;
+            border-radius: 14px;
+            font-family: var(--font-hud);
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
             cursor: pointer;
-            box-shadow: 0 5px 0 #4a90e2;
-            transition: all 0.1s ease;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+            transition: all 0.2s ease;
         }
 
-        .btn-confirm-submit:hover { background: #7bbaff; }
-        .btn-confirm-submit:active { transform: translateY(5px); box-shadow: 0 0px 0 #4a90e2; }
+        .btn-confirm-submit:hover {
+            background: linear-gradient(135deg, #38bdf8 0%, #00e5ff 100%);
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.7);
+            transform: translateY(-2px);
+        }
 
-        /* Loading UI Overlay */
+        /* Deep Space Loading UI Overlay */
         .loading-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(5px);
-            z-index: 3000;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 5000;
             justify-content: center;
             align-items: center;
             flex-direction: column;
         }
 
         .loading-overlay p {
-            margin-top: 16px;
-            color: #5c9ce6;
+            margin-top: 18px;
+            color: var(--neon-cyan);
+            font-family: var(--font-hud);
             font-weight: 700;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            letter-spacing: 0.05em;
             animation: pulseText 1.5s infinite;
+            text-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
         }
 
+        /* Keyframes */
         @keyframes spin { 
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -884,148 +1073,289 @@
             100% { opacity: 1; transform: translateY(0); }
         }
         @keyframes modalPopIn {
-            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+            0% { opacity: 0; transform: scale(0.85) translateY(20px); }
             100% { opacity: 1; transform: scale(1) translateY(0); }
         }
         @keyframes pulseText { 
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.4; }
+        }
+
+        /* =========================================
+           9. UI/UX ENHANCEMENTS & ACCESSIBILITY (PALETTE 🎨)
+           ========================================= */
+        /* Accessible Focus Rings */
+        :focus-visible {
+            outline: 2px solid var(--neon-cyan) !important;
+            outline-offset: 3px !important;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.6) !important;
+        }
+
+        /* Tactile Micro-Interactions */
+        button:active, .btn-submit-work:active, .btn-start-quiz:active, .tab-btn:active, .btn-choose-file:active, .btn-sfx-toggle:active {
+            transform: scale(0.98) !important;
+        }
+
+        /* Header Navigation Actions Group */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Sound SFX Toggle Button */
+        .btn-sfx-toggle {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--neon-cyan);
+            border: 1.5px solid var(--border-hud);
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);
+        }
+
+        .btn-sfx-toggle:hover {
+            background: rgba(0, 229, 255, 0.2);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 18px rgba(0, 229, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-sfx-toggle.muted {
+            background: rgba(148, 163, 184, 0.1);
+            border-color: rgba(148, 163, 184, 0.3);
+            color: #94a3b8;
+            box-shadow: none;
+        }
+
+        /* Responsive 8px Grid & Mobile Ergonomics */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 14px 16px;
+            }
+            .navbar-container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+            }
+            .user-info-group {
+                width: 100%;
+            }
+            .nav-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .stats-summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            .kpi-card-3d {
+                padding: 16px;
+                gap: 12px;
+            }
+            .kpi-icon {
+                width: 46px;
+                height: 46px;
+                font-size: 1.7rem;
+            }
+            .kpi-val {
+                font-size: 1.2rem;
+            }
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .student-tabs-wrapper {
+                width: 100%;
+                justify-content: stretch;
+            }
+            .tab-btn {
+                flex: 1;
+                justify-content: center;
+                padding: 10px 14px;
+            }
+            .room-badge {
+                align-self: flex-start;
+            }
+            .assignment-grid, .quiz-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+            .modal-card {
+                max-height: 90vh;
+                overflow-y: auto;
+                padding: 24px 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-summary-grid {
+                grid-template-columns: 1fr;
+            }
+            .user-text h1 {
+                font-size: 1.15rem;
+            }
+        }
+
+        /* Reduced Motion Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="orb-1"></div>
-    <div class="orb-2"></div>
-    <div class="orb-3"></div>
-    <div class="orb-4"></div>
-    <div class="bg-grid-overlay"></div>
+    <!-- Deep Space Hyperspace Canvas Background (Consistent with index & teacher) -->
+    <canvas id="spaceCanvas"></canvas>
+    <div class="crt-scanlines"></div>
+    <div class="hex-grid-overlay"></div>
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
 
-    <!-- Navbar Header ด้านบน -->
-    <nav class="navbar">
+    <!-- Cadet Cockpit Navigation Header -->
+    <nav class="navbar" aria-label="แถบนำทางห้องนักเรียน">
         <div class="navbar-container">
             <div class="user-info-group">
-                <div class="avatar">🎓</div>
+                <div class="avatar" aria-hidden="true">👨‍🚀</div>
                 <div class="user-text">
-                    <h1 id="greetingText">สวัสดีนักเรียน!</h1>
-                    <p id="studentSubText">เข้าสู่ระบบห้องเรียนเรียบร้อยแล้ว</p>
+                    <h1 id="greetingText">CADET TERMINAL</h1>
+                    <p id="studentSubText">เข้าสู่ระบบห้องเรียนอวกาศเรียบร้อยแล้ว</p>
                 </div>
             </div>
-            <button class="btn-logout" onclick="logout()">
-                <span>🚪</span> ออกจากระบบ
-            </button>
+            <div class="nav-actions">
+                <button id="sfxToggleBtn" class="btn-sfx-toggle" onclick="toggleSound()" title="เปิด/ปิดเสียงเอฟเฟกต์" aria-label="เปิด/ปิดเสียงเอฟเฟกต์">
+                    <span id="sfxIcon">🔊</span>
+                </button>
+                <button class="btn-logout" onclick="logout()" aria-label="ออกจากระบบ">
+                    <span>🚪</span> ออกจากระบบ
+                </button>
+            </div>
         </div>
     </nav>
 
-    <!-- เนื้อหาหลัก -->
+    <!-- Main Flight Deck Content -->
     <main class="container">
-        <!-- 3D Student KPI Summary Cards -->
-        <div class="stats-summary-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 24px;">
-            <div class="kpi-card-3d" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; padding: 18px 20px; border-radius: 24px; box-shadow: 0 10px 22px rgba(99, 102, 241, 0.35); border: 2px solid #ffffff; display: flex; align-items: center; gap: 14px; transition: transform 0.2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform='translateY(0)'">
-                <div style="font-size: 2.2rem; background: rgba(255,255,255,0.22); width: 56px; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);">🏆</div>
-                <div>
-                    <div style="font-size: 0.85rem; opacity: 0.9; font-weight: 600;">คะแนนสะสมรวม</div>
-                    <div style="font-size: 1.45rem; font-weight: 700;" id="kpiStudentScore">0 คะแนน</div>
+        <!-- 3D Student KPI Summary Telemetry Cards -->
+        <div class="stats-summary-grid">
+            <div class="kpi-card-3d kpi-card-score">
+                <div class="kpi-icon">🏆</div>
+                <div class="kpi-info">
+                    <div class="kpi-label">คะแนนสะสมรวม (TOTAL XP)</div>
+                    <div class="kpi-val" id="kpiStudentScore">0 คะแนน</div>
                 </div>
             </div>
 
-            <div class="kpi-card-3d" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 18px 20px; border-radius: 24px; box-shadow: 0 10px 22px rgba(16, 185, 129, 0.35); border: 2px solid #ffffff; display: flex; align-items: center; gap: 14px; transition: transform 0.2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform='translateY(0)'">
-                <div style="font-size: 2.2rem; background: rgba(255,255,255,0.22); width: 56px; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);">✅</div>
-                <div>
-                    <div style="font-size: 0.85rem; opacity: 0.9; font-weight: 600;">งานที่ส่งแล้ว</div>
-                    <div style="font-size: 1.45rem; font-weight: 700;" id="kpiStudentSubmitted">0 งาน</div>
+            <div class="kpi-card-3d kpi-card-submitted">
+                <div class="kpi-icon">✅</div>
+                <div class="kpi-info">
+                    <div class="kpi-label">งานที่ส่งแล้ว (COMPLETED)</div>
+                    <div class="kpi-val" id="kpiStudentSubmitted">0 งาน</div>
                 </div>
             </div>
 
-            <div class="kpi-card-3d" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; padding: 18px 20px; border-radius: 24px; box-shadow: 0 10px 22px rgba(249, 115, 22, 0.35); border: 2px solid #ffffff; display: flex; align-items: center; gap: 14px; transition: transform 0.2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform='translateY(0)'">
-                <div style="font-size: 2.2rem; background: rgba(255,255,255,0.22); width: 56px; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);">⏰</div>
-                <div>
-                    <div style="font-size: 0.85rem; opacity: 0.9; font-weight: 600;">งานค้างส่ง</div>
-                    <div style="font-size: 1.45rem; font-weight: 700;" id="kpiStudentPending">0 งาน</div>
+            <div class="kpi-card-3d kpi-card-pending">
+                <div class="kpi-icon">⏰</div>
+                <div class="kpi-info">
+                    <div class="kpi-label">งานค้างส่ง (PENDING QUESTS)</div>
+                    <div class="kpi-val" id="kpiStudentPending">0 งาน</div>
                 </div>
             </div>
 
-            <div class="kpi-card-3d" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; padding: 18px 20px; border-radius: 24px; box-shadow: 0 10px 22px rgba(6, 182, 212, 0.35); border: 2px solid #ffffff; display: flex; align-items: center; gap: 14px; transition: transform 0.2s;" onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform='translateY(0)'">
-                <div style="font-size: 2.2rem; background: rgba(255,255,255,0.22); width: 56px; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);">✍️</div>
-                <div>
-                    <div style="font-size: 0.85rem; opacity: 0.9; font-weight: 600;">แบบทดสอบ</div>
-                    <div style="font-size: 1.45rem; font-weight: 700;" id="kpiStudentQuiz">0 ชุด</div>
+            <div class="kpi-card-3d kpi-card-quiz">
+                <div class="kpi-icon">✍️</div>
+                <div class="kpi-info">
+                    <div class="kpi-label">แบบทดสอบ (SIMULATIONS)</div>
+                    <div class="kpi-val" id="kpiStudentQuiz">0 ชุด</div>
                 </div>
             </div>
         </div>
 
-        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
-            <div class="student-tabs-wrapper" style="background: #ffffff; padding: 6px; border-radius: 20px; box-shadow: 0 6px 18px rgba(99, 102, 241, 0.12); border: 1.5px solid #e0e7ff; display: flex; gap: 6px;">
+        <!-- Section Switchboard Header & Badges -->
+        <div class="section-header">
+            <div class="student-tabs-wrapper">
                 <button type="button" class="tab-btn active" id="tabBtnAssignments" onclick="switchStudentTab('assignments')">
-                    <span>📝 ภาระงาน</span>
+                    <span>📝 ภาระงาน (Quests)</span>
                 </button>
                 <button type="button" class="tab-btn" id="tabBtnQuizzes" onclick="switchStudentTab('quizzes')">
-                    <span>✍️ แบบทดสอบ</span>
+                    <span>✍️ แบบทดสอบ (Simulations)</span>
                     <span class="tab-badge" id="quizCountBadge">0</span>
                 </button>
             </div>
-            <span class="room-badge" id="roomBadge" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color: white; padding: 8px 18px; border-radius: 16px; font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">ห้อง: -</span>
+            <span class="room-badge" id="roomBadge">🚀 ห้อง: -</span>
         </div>
 
-        <!-- View 1: ภาระงาน/การบ้าน -->
+        <!-- View 1: ภาระงาน/การบ้าน (Quests) -->
         <div id="assignmentSectionView">
             <div id="assignmentList" class="assignment-grid">
                 <div class="status-box">
                     <div class="cute-spinner"></div>
-                    <p>กำลังโหลดรายการชิ้นงาน...</p>
+                    <p>กำลังเชื่อมต่อสัญญาณภารกิจอวกาศ...</p>
                 </div>
             </div>
         </div>
 
-        <!-- View 2: แบบทดสอบออนไลน์ (Google Forms) -->
+        <!-- View 2: แบบทดสอบออนไลน์ (Simulations Google Forms) -->
         <div id="quizSectionView" style="display: none;">
             <div id="quizList" class="quiz-grid">
                 <div class="status-box">
                     <div class="cute-spinner"></div>
-                    <p>กำลังโหลดแบบทดสอบออนไลน์...</p>
+                    <p>กำลังโหลดแบบทดสอบจำลองออนไลน์...</p>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Modal ป๊อปอัปสำหรับอัปโหลดไฟล์ส่งงาน -->
+    <!-- Modal ป๊อปอัปสำหรับอัปโหลดไฟล์ส่งงาน (Mission Payload Upload) -->
     <div class="modal-overlay" id="submitModal">
         <div class="modal-card">
             <div class="modal-icon-wrapper info">
                 <span>📤</span>
             </div>
-            <h2 class="modal-title">ส่งงานนักเรียน</h2>
+            <h2 class="modal-title">ส่งผลงานภารกิจ (UPLOAD PAYLOAD)</h2>
             <p class="modal-subtitle" id="modalTaskName">ชิ้นงาน</p>
 
-            <div id="modalRubricContainer" style="display: none; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 14px; padding: 12px; margin: 10px 0; text-align: left;">
-                <div style="font-size: 0.85rem; font-weight: 700; color: #6366f1; margin-bottom: 4px;">
-                    🤖 เกณฑ์การประเมินชิ้นงาน (Rubric Score):
+            <div id="modalRubricContainer" style="display: none;">
+                <div style="font-weight: 700; margin-bottom: 6px;">
+                    🤖 เกณฑ์การประเมินภารกิจ (Tactical Rubric):
                 </div>
-                <div id="modalRubricText" style="font-size: 0.85rem; color: #475569; white-space: pre-line; line-height: 1.4;"></div>
+                <div id="modalRubricText"></div>
             </div>
 
             <!-- ส่วนเลือกเพื่อนร่วมกลุ่ม (ซ่อนโดยอัตโนมัติหากเป็นงานเดี่ยว) -->
             <div id="groupMemberContainer" style="display: none; text-align: left; margin: 12px 0 16px 0;">
-                <label style="font-size: 0.85rem; font-weight: 700; color: #475569; display: block; margin-bottom: 6px;">
-                    👥 เลือกเพื่อนร่วมกลุ่ม (สำหรับงานกลุ่ม):
+                <label style="display: block; margin-bottom: 6px;">
+                    👥 เลือกลูกเรือร่วมกลุ่ม (Squadron Teammates):
                 </label>
-                <div id="groupMemberList" style="max-height: 140px; overflow-y: auto; padding: 10px; border-radius: 14px; border: 2px solid #cbd5e1; background: #f8fafc; display: flex; flex-direction: column; gap: 8px;">
+                <div id="groupMemberList">
                     <span style="font-size: 0.85rem; color: #94a3b8;">-- กำลังโหลดรายชื่อเพื่อนร่วมห้อง... --</span>
                 </div>
-                <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">* คลิกติ๊กถูกเพื่อเลือกเพื่อนในกลุ่ม</p>
+                <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">* ติ๊กถูกเพื่อเลือกเพื่อนร่วมภารกิจ</p>
             </div>
-            <!-- ส่วนกรอกลิงก์ Google Drive (หากประเภทการส่งงานเป็น 🔗 ลิงก์ Google Drive) -->
+            
+            <!-- ส่วนกรอกลิงก์ Google Drive -->
             <div id="driveLinkContainer" style="display: none; text-align: left; margin: 12px 0 16px 0;">
-                <label style="font-size: 0.85rem; font-weight: 700; color: #475569; display: block; margin-bottom: 6px;">
+                <label style="display: block; margin-bottom: 6px;">
                     🔗 วางลิงก์ Google Drive สำหรับส่งงาน:
                 </label>
-                <input type="url" id="studentDriveLinkInput" class="custom-input" style="width:100%; padding:12px; border-radius:14px; border:2px solid #cbd5e1; font-size:0.95rem; box-sizing:border-box;" placeholder="https://drive.google.com/file/d/...">
+                <input type="url" id="studentDriveLinkInput" class="custom-input" style="width:100%; padding:12px; border-radius:14px; font-size:0.95rem; box-sizing:border-box;" placeholder="https://drive.google.com/file/d/...">
                 <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px;">* กรุณาเปิดสิทธิ์ลิงก์เป็น "ทุกคนที่มีลิงก์สามารถดูได้"</p>
             </div>
             
             <input type="file" id="fileInput" hidden onchange="handleFileSelect(event)">
             
             <button type="button" class="btn-choose-file" onclick="document.getElementById('fileInput').click()">
-                <span>📁</span> เลือกไฟล์จากเครื่อง
+                <span>📁</span> เลือกไฟล์จากอุปกรณ์
             </button>
 
             <p class="file-name-display" id="fileNameDisplay">ยังไม่ได้เลือกไฟล์</p>
@@ -1043,35 +1373,152 @@
             <div class="modal-icon-wrapper success" id="alertIconWrapper">
                 <span id="alertIcon">🎉</span>
             </div>
-            <h2 class="modal-title" id="alertTitle">แจ้งเตือน</h2>
-            <p class="modal-message" id="alertMessage" style="font-size:1rem; color:#64748b; margin-bottom:22px; line-height:1.5;">รายละเอียด</p>
-            <button type="button" class="btn-confirm-submit" style="width:100%;" onclick="closeAlertModal()">ตกลง</button>
+            <h2 class="modal-title" id="alertTitle">แจ้งเตือนระบบ</h2>
+            <p class="modal-message" id="alertMessage" style="font-size:1rem; color:#94a3b8; margin-bottom:22px; line-height:1.5;">รายละเอียด</p>
+            <button type="button" class="btn-confirm-submit" style="width:100%;" onclick="closeAlertModal()">รับทราบ</button>
         </div>
     </div>
 
     <!-- Modal ป๊อปอัปยืนยันการออกจากระบบ -->
     <div class="modal-overlay" id="logoutModal" style="display: none;">
         <div class="modal-card">
-            <div class="modal-icon-wrapper" style="background: #fff0f0; color: #e65c5c; border: 1px solid #ffd8d8;">
+            <div class="modal-icon-wrapper error">
                 <span>🚪</span>
             </div>
-            <h2 class="modal-title" style="font-size: 1.3rem; font-weight: 700; color: #1e293b; margin-bottom: 8px;">ยืนยันออกจากระบบ</h2>
-            <p class="modal-message" style="font-size:0.95rem; color:#64748b; margin-bottom:22px; line-height:1.5;">คุณต้องการออกจากระบบนักเรียนใช่หรือไม่?</p>
-            <div class="modal-actions" style="display: flex; gap: 12px; justify-content: center;">
-                <button type="button" class="btn-cancel" onclick="closeLogoutModal()" style="flex: 1; padding: 12px; border-radius: 16px; border: 1px solid #cbd5e1; background: #f8fafc; color: #475569; font-weight: 700; cursor: pointer;">ยกเลิก</button>
-                <button type="button" class="btn-confirm-submit" onclick="confirmLogout()" style="flex: 1; padding: 12px; border-radius: 16px; border: none; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);">🚪 ออกจากระบบ</button>
+            <h2 class="modal-title" style="margin-bottom: 8px;">ยืนยันออกจากสถานี</h2>
+            <p class="modal-message" style="font-size:0.95rem; color:#94a3b8; margin-bottom:22px; line-height:1.5;">คุณต้องการออกจากระบบนักเรียน (Cadet Terminal) ใช่หรือไม่?</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeLogoutModal()">ยกเลิก</button>
+                <button type="button" class="btn-logout" onclick="confirmLogout()" style="flex:1.5; justify-content:center; background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color:white; border:none; box-shadow:0 0 20px rgba(239, 68, 68, 0.4);">🚪 ออกจากระบบ</button>
             </div>
         </div>
     </div>
 
-    <!-- Loading UI Overlay -->
+    <!-- Deep Space Loading UI Overlay -->
     <div class="loading-overlay" id="loadingUI">
         <div class="cute-spinner"></div>
-        <p id="loadingText">กำลังอัปโหลดไฟล์ไปหาคุณครู...</p>
+        <p id="loadingText">กำลังส่งสัญญาณข้อมูลไปยังสถานีแม่ข่าย...</p>
     </div>
 
     <script>
-        // ใส่ Web App URL ของคุณครูตรงนี้สำหรับอัปโหลดไฟล์ไป Google Drive
+        // =========================================
+        // 1. Interactive Hyperspace Canvas Starfield (Identical to index & teacher)
+        // =========================================
+        const canvas = document.getElementById('spaceCanvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+        let stars = [];
+        let numStars = 120;
+
+        function resizeCanvas() {
+            if (!canvas) return;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initStars();
+        }
+
+        function initStars() {
+            if (!canvas) return;
+            stars = [];
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 0.5,
+                    speed: Math.random() * 0.6 + 0.2,
+                    brightness: Math.random()
+                });
+            }
+        }
+
+        function drawStars() {
+            if (!canvas || !ctx) return;
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let star of stars) {
+                if (!prefersReducedMotion) {
+                    star.y -= star.speed;
+                    if (star.y < 0) {
+                        star.y = canvas.height;
+                        star.x = Math.random() * canvas.width;
+                    }
+                }
+                const alpha = prefersReducedMotion ? 0.4 : (0.4 + Math.sin(Date.now() * 0.003 + star.x) * 0.3);
+                ctx.fillStyle = `rgba(0, 229, 255, ${alpha})`;
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            if (!prefersReducedMotion) {
+                requestAnimationFrame(drawStars);
+            }
+        }
+
+        if (canvas) {
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            requestAnimationFrame(drawStars);
+        }
+
+        // Web Audio Synthesizer SFX with Mute Memory
+        const audioCtx = (window.AudioContext || window.webkitAudioContext) ? new (window.AudioContext || window.webkitAudioContext)() : null;
+        let isSoundMuted = localStorage.getItem('soundMuted') === 'true';
+
+        function updateSoundUI() {
+            const icon = document.getElementById('sfxIcon');
+            const btn = document.getElementById('sfxToggleBtn');
+            if (icon) icon.textContent = isSoundMuted ? '🔇' : '🔊';
+            if (btn) {
+                btn.setAttribute('aria-label', isSoundMuted ? 'เปิดเสียงเอฟเฟกต์ (SFX)' : 'ปิดเสียงเอฟเฟกต์ (SFX)');
+                if (isSoundMuted) btn.classList.add('muted');
+                else btn.classList.remove('muted');
+            }
+        }
+
+        function toggleSound() {
+            isSoundMuted = !isSoundMuted;
+            localStorage.setItem('soundMuted', isSoundMuted ? 'true' : 'false');
+            updateSoundUI();
+            if (!isSoundMuted) playLaserSound();
+        }
+
+        function playLaserSound() {
+            if (isSoundMuted || !audioCtx) return;
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(650, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.15);
+            } catch(e) {}
+        }
+
+        function playSuccessSound() {
+            if (isSoundMuted || !audioCtx) return;
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.35);
+            } catch(e) {}
+        }
+
+        // Web App URL ของคุณครูสำหรับอัปโหลดไฟล์ไป Google Drive
         const API_URL = 'https://script.google.com/macros/s/AKfycbxYaznWz2NvtG5JAuzm6a48FgbyRCe8lUW6DFYzv97Oi9TY8l_pYyAZcRkGjAu6dJp7/exec';
 
         let currentTaskId = '';
@@ -1086,6 +1533,7 @@
 
         // 1. ตรวจสอบข้อมูลการเข้าสู่ระบบและแสดงผลเรียลไทม์ผ่าน Firebase
         document.addEventListener('DOMContentLoaded', () => {
+            updateSoundUI();
             const studentDataRaw = localStorage.getItem('studentData');
 
             if (!studentDataRaw) {
@@ -1104,9 +1552,9 @@
                 studentSubjectGlobal = studentSubject;
 
                 // แสดงข้อความทักทายใน Header
-                document.getElementById('greetingText').textContent = `สวัสดี, ${studentName} 👋`;
-                document.getElementById('studentSubText').textContent = `รหัสประจำตัว: ${studentId || '-'}`;
-                document.getElementById('roomBadge').textContent = `ห้อง/วิชา: ${studentRoom || 'ทั้งหมด'}`;
+                document.getElementById('greetingText').textContent = `ยินดีต้อนรับ, ${studentName} 🚀`;
+                document.getElementById('studentSubText').textContent = `CADET ID: ${studentId || '-'} | ห้อง: ${studentRoom || 'ทั่วไป'}`;
+                document.getElementById('roomBadge').textContent = `🚀 ห้อง/วิชา: ${studentRoom || 'ทั้งหมด'}`;
 
                 // 1. Instant Load จาก Local Storage Cache (0ms perceived wait time)
                 renderDashboardFromCache(studentId);
@@ -1235,6 +1683,7 @@
 
         // ฟังก์ชันสลับแท็บเมนู
         function switchStudentTab(tabKey) {
+            playLaserSound();
             const btnAssignments = document.getElementById('tabBtnAssignments');
             const btnQuizzes = document.getElementById('tabBtnQuizzes');
             const viewAssignments = document.getElementById('assignmentSectionView');
@@ -1264,7 +1713,7 @@
             if (!quizzes || quizzes.length === 0) {
                 quizList.innerHTML = `
                     <div class="status-box">
-                        <p>🎉 ยังไม่มีแบบทดสอบออนไลน์ในขณะนี้</p>
+                        <p>🎉 ยังไม่มีแบบทดสอบจำลองออนไลน์ในขณะนี้</p>
                     </div>
                 `;
                 return;
@@ -1284,21 +1733,21 @@
                 card.innerHTML = `
                     <div class="quiz-card-header">
                         <div class="quiz-icon">📝</div>
-                        <span class="quiz-status-badge">Google Forms</span>
+                        <span class="quiz-status-badge">Google Forms Protocol</span>
                     </div>
                     <h3 class="quiz-title">${title}</h3>
                     <div class="quiz-meta-grid">
                         <div class="quiz-meta-item">
-                            <span>⏱️ เวลาทำ</span>
+                            <span>⏱️ เวลาทำภารกิจ</span>
                             <strong>${timeLimit} นาที</strong>
                         </div>
                         <div class="quiz-meta-item">
-                            <span>🎯 เกณฑ์ผ่าน</span>
+                            <span>🎯 เกณฑ์ผ่าน (PASS)</span>
                             <strong>${passingScore}/${maxScore} คะแนน</strong>
                         </div>
                     </div>
-                    <a href="${formUrl}" target="_blank" rel="noopener" class="btn-start-quiz">
-                        <span class="btn-text">✍️ ทำแบบทดสอบ</span>
+                    <a href="${formUrl}" target="_blank" rel="noopener" class="btn-start-quiz" onclick="playLaserSound()">
+                        <span class="btn-text">✍️ เริ่มทำแบบทดสอบ (SIMULATION)</span>
                         <span class="btn-arrow">➔</span>
                     </a>
                 `;
@@ -1313,7 +1762,7 @@
             if (!assignments || assignments.length === 0) {
                 assignmentList.innerHTML = `
                     <div class="status-box">
-                        <p>🎉 ยังไม่มีชิ้นงานในขณะนี้!</p>
+                        <p>🎉 ยังไม่มีชิ้นงานหรือภารกิจค้างในขณะนี้!</p>
                     </div>
                 `;
                 if (document.getElementById('kpiStudentSubmitted')) document.getElementById('kpiStudentSubmitted').textContent = '0 งาน';
@@ -1343,7 +1792,7 @@
             if (document.getElementById('kpiStudentScore')) document.getElementById('kpiStudentScore').textContent = `${totalScoreAcc} คะแนน`;
 
             assignments.forEach(item => {
-                const title = item.Task_Name || item.Title || item.title || 'ชิ้นงานแบบไม่ระบุชื่อ';
+                const title = item.Task_Name || item.Title || item.title || 'ภารกิจอวกาศ';
                 const desc = item.Description || item.description || 'ไม่มีรายละเอียดเพิ่มเติม';
                 const dueDate = item.Due_Date || item.due_date || 'ไม่กำหนด';
                 const maxScore = item.Max_Score || item.max_score || '-';
@@ -1357,8 +1806,8 @@
                 const submittedAt = item.submittedAt || '';
 
                 const isLinkType = String(submissionType).includes('ลิงก์');
-                const linkLabelText = isLinkType ? '🔗 เปิดดูลิงก์' : '📁 ดูไฟล์งานที่ส่ง';
-                const reSubmitLabelText = isLinkType ? '✨ ส่งงานอีกครั้ง (อัปเดตลิงก์)' : '✨ ส่งงานอีกครั้ง (อัปเดตไฟล์)';
+                const linkLabelText = isLinkType ? '🔗 ดูลิงก์ที่ส่ง' : '📁 ดูไฟล์งานที่ส่ง';
+                const reSubmitLabelText = isLinkType ? '🔄 อัปเดตลิงก์ส่งงานใหม่' : '🔄 อัปเดตไฟล์ส่งงานใหม่';
 
                 const card = document.createElement('div');
                 card.className = `assignment-card ${isSubmitted ? 'submitted-card' : ''}`;
@@ -1370,15 +1819,15 @@
 
                 const statusBadgeHtml = isSubmitted 
                     ? `<span class="badge-status submitted">✅ ส่งเรียบร้อยแล้ว</span>`
-                    : `<span class="badge-status pending">⏳ ยังไม่ได้ส่ง</span>`;
+                    : `<span class="badge-status pending">⏳ รอการส่งภารกิจ</span>`;
 
                 const typeBadgeHtml = taskType === 'กลุ่ม'
-                    ? `<span class="badge-subject" style="background:#fff7ed; color:#c2410c; border-color:#fed7aa;">👥 งานกลุ่ม</span>`
-                    : `<span class="badge-subject" style="background:#f0fdf4; color:#15803d; border-color:#bbf7d0;">👤 งานเดี่ยว</span>`;
+                    ? `<span class="badge-subject" style="background:rgba(249, 115, 22, 0.15); color:#fb923c; border-color:rgba(249, 115, 22, 0.4);">👥 งานกลุ่ม (SQUAD)</span>`
+                    : `<span class="badge-subject" style="background:rgba(0, 229, 255, 0.12); color:#67e8f9; border-color:rgba(0, 229, 255, 0.3);">👤 งานเดี่ยว (SOLO)</span>`;
 
                 const submissionInfoHtml = isSubmitted 
                     ? `<div class="submission-info-banner">
-                           <span>✅ ส่งงานเมื่อ ${formatDate(submittedAt)}</span>
+                           <span>✅ ส่งภารกิจเมื่อ ${formatDate(submittedAt)}</span>
                            ${fileUrl ? `<a href="${fileUrl}" target="_blank" rel="noopener">${linkLabelText}</a>` : ''}
                        </div>`
                     : '';
@@ -1388,7 +1837,7 @@
                            <span>${reSubmitLabelText}</span>
                        </button>`
                     : `<button type="button" class="btn-submit-work" data-type="${taskType}" data-submission-type="${submissionType}" onclick="submitAssignment('${safeTaskId}', '${safeTitle}', '${safeTaskType}', '${safeSubTypes}')">
-                           <span>📤</span> ส่งงาน
+                           <span>📤</span> ส่งภารกิจ (SUBMIT QUEST)
                        </button>`;
 
                 card.innerHTML = `
@@ -1397,7 +1846,7 @@
                             <span class="badge-subject">📌 ${roomName}</span>
                             ${typeBadgeHtml}
                             ${statusBadgeHtml}
-                            <span class="badge-score">⭐ ${maxScore} คะแนน</span>
+                            <span class="badge-score">⭐ ${maxScore} XP</span>
                         </div>
                         <h3 class="assignment-title">${title}</h3>
                         <p class="assignment-desc">${desc}</p>
@@ -1416,6 +1865,7 @@
 
         // ฟังก์ชันเปิด Modal ส่งงาน
         function submitAssignment(taskId, taskName, taskType = 'เดี่ยว', submissionType = 'รูปภาพ/ไฟล์') {
+            playLaserSound();
             currentTaskId = taskId;
             currentTaskName = taskName;
             currentSubmissionType = submissionType;
@@ -1485,7 +1935,7 @@
                 const myId = student.id || student.Student_ID || '';
 
                 const listDiv = document.getElementById('groupMemberList');
-                if (listDiv) listDiv.innerHTML = '<span style="font-size: 0.85rem; color: #94a3b8;">กำลังโหลดเพื่อนร่วมห้อง...</span>';
+                if (listDiv) listDiv.innerHTML = '<span style="font-size: 0.85rem; color: #94a3b8;">กำลังค้นหาสัญญาณลูกเรือในห้องเรียน...</span>';
 
                 const snapshot = await db.ref('Students').once('value');
                 const data = snapshot.val() || {};
@@ -1505,14 +1955,14 @@
                         listDiv.innerHTML = classmates.map(s => {
                             const name = s.Name_Surname || s.name || '';
                             const no = s.No || s.no || '';
-                            return `<label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #334155; cursor: pointer;">
-                                <input type="checkbox" name="groupMemberCheckbox" value="${name}" style="width: 16px; height: 16px; accent-color: #5c9ce6; cursor: pointer;">
+                            return `<label style="display: flex; align-items: center; gap: 10px; font-size: 0.92rem; color: #e2e8f0; cursor: pointer; padding: 4px 0;">
+                                <input type="checkbox" name="groupMemberCheckbox" value="${name}" style="width: 17px; height: 17px; accent-color: #00E5FF; cursor: pointer;">
                                 <span>${no ? `[เลขที่ ${no}] ` : ''}${name}</span>
                             </label>`;
                         }).join('');
                         classmatesLoaded = true;
                     } else {
-                        listDiv.innerHTML = '<span style="font-size: 0.85rem; color: #94a3b8;">ไม่พบเพื่อนในห้องเรียนเดียวกัน</span>';
+                        listDiv.innerHTML = '<span style="font-size: 0.85rem; color: #94a3b8;">ไม่พบลูกเรือในห้องเรียนเดียวกัน</span>';
                     }
                 }
             } catch(e) {
@@ -1521,6 +1971,7 @@
         }
 
         function closeSubmitModal() {
+            playLaserSound();
             document.getElementById('submitModal').style.display = 'none';
         }
 
@@ -1586,7 +2037,7 @@
             const rawFile = event.target.files[0];
             if (!rawFile) return;
 
-            document.getElementById('fileNameDisplay').textContent = '⚡ กำลังเตรียมและย่อขนาดไฟล์...';
+            document.getElementById('fileNameDisplay').textContent = '⚡ กำลังสแกนและประมวลผลไฟล์...';
             
             const file = await compressImageIfNeeded(rawFile);
 
@@ -1659,7 +2110,7 @@
 
             closeSubmitModal();
             const loadingUI = document.getElementById('loadingUI');
-            document.getElementById('loadingText').textContent = isLinkSubmission ? 'กำลังบันทึกลิงก์ส่งงาน...' : 'กำลังอัปโหลดไฟล์ไป Google Drive...';
+            document.getElementById('loadingText').textContent = isLinkSubmission ? 'กำลังส่งข้อมูลลิงก์ไปยังสถานีแม่ข่าย...' : 'กำลังส่งไฟล์ Payload ไปยัง Google Drive...';
             loadingUI.style.display = 'flex';
 
             try {
@@ -1742,7 +2193,8 @@
 
                 await db.ref(`Submissions/${subKey}`).set(submissionRecord);
 
-                showAlertModal('🎉 ส่งงานสำเร็จ!', 'ไฟล์งานของคุณถูกบันทึกเรียบร้อยแล้วครับ', 'success');
+                playSuccessSound();
+                showAlertModal('🎉 ส่งงานสำเร็จ!', 'ไฟล์งานและข้อมูลภารกิจของคุณถูกบันทึกสู่ระบบแม่ข่ายเรียบร้อยแล้วครับ 🚀', 'success');
             } catch (error) {
                 console.error('Error submitting work:', error);
                 showAlertModal('❌ เกิดข้อผิดพลาด', error.message || 'ไม่สามารถบันทึกการส่งงานได้ กรุณาลองใหม่อีกครั้ง', 'error');
@@ -1771,6 +2223,7 @@
         }
 
         function closeAlertModal() {
+            playLaserSound();
             document.getElementById('alertModal').style.display = 'none';
             if (typeof onAlertCloseCallback === 'function') {
                 onAlertCloseCallback();
@@ -1796,14 +2249,17 @@
 
         // ฟังก์ชันออกจากระบบ
         function logout() {
+            playLaserSound();
             document.getElementById('logoutModal').style.display = 'flex';
         }
 
         function closeLogoutModal() {
+            playLaserSound();
             document.getElementById('logoutModal').style.display = 'none';
         }
 
         function confirmLogout() {
+            playLaserSound();
             localStorage.removeItem('studentData');
             window.location.href = 'index.html';
         }
