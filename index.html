@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Classroom: Space Odyssey | Game Portal</title>
     
     <!-- Preconnect & Google Fonts (Orbitron, Chakra Petch, Rajdhani, Prompt, Press Start 2P) -->
@@ -1987,24 +1987,25 @@
             loadingUI.style.display = 'flex';
 
             try {
-                const snapshot = await db.ref('Teachers').once('value');
-                const teachers = snapshot.val();
                 let matchedTeacher = null;
 
-                if (teachers) {
-                    Object.keys(teachers).forEach(key => {
-                        const t = teachers[key];
-                        const pass = String(t.Password || t.password || t.pin || '');
-                        if (pass === String(teacherPassword)) {
-                            matchedTeacher = { Teacher_ID: key, ...t };
-                        }
-                    });
+                // Security Fix: Query specifically by password to prevent dumping all teacher records to client
+                let snapshot = await db.ref('Teachers').orderByChild('Password').equalTo(teacherPassword).once('value');
+                if (!snapshot.exists()) {
+                    snapshot = await db.ref('Teachers').orderByChild('password').equalTo(teacherPassword).once('value');
                 }
 
-                const hasTeachers = teachers && Object.keys(teachers).length > 0;
-
-                if (!matchedTeacher && !hasTeachers && teacherPassword === '123456') {
-                    matchedTeacher = { Teacher_ID: 'teacher1', name: 'คุณครูผู้สอน' };
+                if (snapshot.exists()) {
+                    const matchedData = snapshot.val();
+                    const key = Object.keys(matchedData)[0];
+                    matchedTeacher = { Teacher_ID: key, ...matchedData[key] };
+                } else {
+                    // Fallback for initial setup if no teacher accounts exist yet
+                    const firstSnap = await db.ref('Teachers').limitToFirst(1).once('value');
+                    const hasTeachers = firstSnap.exists();
+                    if (!hasTeachers && teacherPassword === '123456') {
+                        matchedTeacher = { Teacher_ID: 'teacher1', name: 'คุณครูผู้สอน' };
+                    }
                 }
 
                 if (matchedTeacher) {

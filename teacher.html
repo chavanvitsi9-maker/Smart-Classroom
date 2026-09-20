@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Classroom | ระบบจัดการสำหรับครูผู้สอน</title>
     <!-- Preconnect & Fonts for High Speed Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -963,7 +963,7 @@
                 <button id="sfxToggleBtn" class="btn-sfx-toggle" onclick="toggleSound()" title="เปิด/ปิดเสียงเอฟเฟกต์" aria-label="เปิด/ปิดเสียงเอฟเฟกต์">
                     <span id="sfxIcon">🔊</span>
                 </button>
-                <a href="https://chavanvitsi9-maker.github.io/smart-classroom-qr/admin.html" target="_blank" rel="noopener noreferrer" class="btn-action" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; border: none; padding: 8px 16px; border-radius: 12px; font-size: 0.9rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(6, 182, 212, 0.35);">
+                <a href="./smart-classroom-qr/admin.html" target="_blank" rel="noopener noreferrer" class="btn-action" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; border: none; padding: 8px 16px; border-radius: 12px; font-size: 0.9rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(6, 182, 212, 0.35);">
                     <span>📱</span> ระบบเช็คชื่อ QR
                 </a>
                 <a href="index.html" class="btn-home-nav">
@@ -1061,7 +1061,7 @@
                         <span>✍️</span> 5. หน้าแบบทดสอบ
                     </button>
 
-                    <a href="https://chavanvitsi9-maker.github.io/smart-classroom-qr/admin.html" target="_blank" rel="noopener noreferrer" class="sidebar-menu-btn" style="text-decoration: none; border-color: #06b6d4; color: #0891b2; background: #ecfeff; margin-top: 6px;">
+                    <a href="./smart-classroom-qr/admin.html" target="_blank" rel="noopener noreferrer" class="sidebar-menu-btn" style="text-decoration: none; border-color: #06b6d4; color: #0891b2; background: #ecfeff; margin-top: 6px;">
                         <span>📱</span> 6. ระบบเช็คชื่อ QR (แท็บใหม่)
                     </a>
 
@@ -1538,47 +1538,48 @@
             fetchRooms();
         });
 
-        // ดึงชื่อครูผู้สอนจาก Firebase
+        // ดึงชื่อครูผู้สอนจาก Firebase และตรวจสอบสิทธิ์เข้าใช้งาน
         async function loadTeacherInfo() {
+            const savedDataStr = localStorage.getItem('teacherData');
+            if (!savedDataStr) {
+                // Route Guard: หากไม่มี Session ให้ย้อนกลับหน้าเข้าสู่ระบบทันที
+                window.location.replace('index.html');
+                return;
+            }
+
+            let teacherObj = null;
             try {
-                const teacherDataStr = localStorage.getItem('teacherData');
-                if (teacherDataStr) {
-                    const teacher = JSON.parse(teacherDataStr);
-                    const name = teacher.Name_Surname || teacher.name || '';
-                    if (name) {
-                        document.getElementById('teacherNameDisplay').textContent = name;
-                    }
+                teacherObj = JSON.parse(savedDataStr);
+                const name = teacherObj.Name_Surname || teacherObj.name || '';
+                if (name) {
+                    document.getElementById('teacherNameDisplay').textContent = name;
                 }
-            } catch(e) {}
+            } catch(e) {
+                localStorage.removeItem('teacherData');
+                window.location.replace('index.html');
+                return;
+            }
 
             const currentName = document.getElementById('teacherNameDisplay').textContent;
             if (!currentName || currentName.includes('กำลังโหลด')) {
                 document.getElementById('teacherNameDisplay').textContent = 'คุณครูผู้สอน';
             }
 
+            // Security Fix: ตรวจสอบเฉพาะข้อมูลของครูที่ล็อกอินอยู่ โดยไม่ดึงโหนด Teachers ทั้งหมด
             try {
-                const snapshot = await db.ref('Teachers').once('value');
-                const teachersVal = snapshot.val() || {};
-                const teachers = Object.keys(teachersVal).map(k => ({ Teacher_ID: k, ...teachersVal[k] }));
-
-                if (teachers.length > 0) {
-                    const savedDataStr = localStorage.getItem('teacherData');
-                    let targetTeacher = teachers[0];
-                    if (savedDataStr) {
-                        try {
-                            const savedObj = JSON.parse(savedDataStr);
-                            const foundMatch = teachers.find(t => (t.Teacher_ID && t.Teacher_ID === savedObj.Teacher_ID) || (t.name && t.name === savedObj.name));
-                            if (foundMatch) targetTeacher = foundMatch;
-                        } catch(err) {}
-                    }
-
-                    const sheetName = targetTeacher.Name_Surname || targetTeacher.name || '';
-                    if (sheetName) {
-                        document.getElementById('teacherNameDisplay').textContent = sheetName;
-                        localStorage.setItem('teacherData', JSON.stringify(targetTeacher));
+                if (teacherObj && teacherObj.Teacher_ID) {
+                    const snap = await db.ref(`Teachers/${teacherObj.Teacher_ID}`).once('value');
+                    if (snap.exists()) {
+                        const tData = snap.val();
+                        const sheetName = tData.Name_Surname || tData.name || '';
+                        if (sheetName) {
+                            document.getElementById('teacherNameDisplay').textContent = sheetName;
+                        }
                     }
                 }
-            } catch(e) {}
+            } catch(e) {
+                console.warn('Could not refresh teacher info:', e);
+            }
         }
 
         // 2. ดึงรายการห้องเรียน / วิชา จาก Firebase Realtime Database
@@ -2358,6 +2359,14 @@
         }
 
         let parsedBulkStudentsList = [];
+        let bulkDebounceTimer = null;
+
+        function handleBulkInputDebounced() {
+            clearTimeout(bulkDebounceTimer);
+            bulkDebounceTimer = setTimeout(() => {
+                parseBulkStudents();
+            }, 250);
+        }
 
         function parseBulkStudents() {
             const bulkInput = document.getElementById('bulkStudentInput');
@@ -4069,7 +4078,7 @@
                 </div>
                 <div style="margin-bottom: 14px;">
                     <label style="display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #334155;">📋 วางรายชื่อจาก Excel (เลขที่ [Tab/คอลัมน์] รหัสนักเรียน [Tab/คอลัมน์] ชื่อ-นามสกุล)</label>
-                    <textarea id="bulkStudentInput" class="custom-textarea" rows="5" placeholder="คัดลอกจาก Excel แล้ววางที่นี่ได้เลยครับ เช่น:&#10;1&#9;6601&#9;ด.ช. สมชาย ใจดี&#10;2&#9;6602&#9;ด.ญ. สมหญิง รักเรียน" oninput="parseBulkStudents()" style="font-family: monospace; font-size: 0.88rem;"></textarea>
+                    <textarea id="bulkStudentInput" class="custom-textarea" rows="5" placeholder="คัดลอกจาก Excel แล้ววางที่นี่ได้เลยครับ เช่น:&#10;1&#9;6601&#9;ด.ช. สมชาย ใจดี&#10;2&#9;6602&#9;ด.ญ. สมหญิง รักเรียน" oninput="handleBulkInputDebounced()" style="font-family: monospace; font-size: 0.88rem;"></textarea>
                     <p style="font-size: 0.8rem; color: #64748b; margin-top: 4px;">* ระบบจะแยกเลขที่, รหัส และชื่อ-นามสกุล ให้อัตโนมัติ (รหัส PIN เริ่มต้นจะเป็น 1234)</p>
                 </div>
 
