@@ -270,6 +270,40 @@
             box-shadow: none;
         }
 
+        /* Top HUD QR Attendance Check-in Button */
+        .btn-qr-hud {
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.22) 0%, rgba(2, 132, 199, 0.55) 100%);
+            border: 1.5px solid var(--neon-cyan);
+            color: #FFFFFF;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-family: var(--font-hud);
+            font-size: 0.88rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 16px rgba(0, 229, 255, 0.35);
+        }
+
+        .btn-qr-hud:hover {
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.45) 0%, rgba(2, 132, 199, 0.8) 100%);
+            box-shadow: var(--glow-cyan-lg);
+            transform: translateY(-2px);
+            color: #FFFFFF;
+        }
+
+        .role-quick-link:hover {
+            background: rgba(0, 229, 255, 0.28) !important;
+            border-color: var(--neon-cyan) !important;
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.5) !important;
+            transform: translateY(-1px);
+        }
+
         /* =========================================
            4. MAIN GAME ARENA (SPA CONTAINER)
            ========================================= */
@@ -1110,6 +1144,12 @@
                 <span>ORBIT-SERVER: ONLINE</span>
             </div>
 
+            <!-- QR Attendance Quick Check-in Button -->
+            <a href="../smart-classroom-qr/index.html" class="btn-qr-hud" title="เข้าสู่ระบบเช็คชื่อด้วยคิวอาร์โค้ด">
+                <span>📱</span>
+                <span>เช็คชื่อ QR</span>
+            </a>
+
             <!-- Sound FX Toggle Button -->
             <button type="button" id="sfxToggleBtn" class="sfx-toggle-btn" onclick="toggleAudio()" title="เปิด/ปิดเสียงเอฟเฟกต์ไซไฟ">
                 <span id="sfxIcon">🔊</span>
@@ -1156,6 +1196,11 @@
                             <p class="role-perk-text">
                                 🚀 ส่งการบ้านทันใจ • เช็กคะแนนเรียลไทม์ • รับ EXP โบนัสทุกภารกิจ
                             </p>
+                            <div style="margin-top: 10px; display: flex; align-items: center;">
+                                <a href="../smart-classroom-qr/index.html" onclick="event.stopPropagation();" class="role-quick-link" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; color: var(--neon-cyan); background: rgba(0, 229, 255, 0.12); border: 1px solid rgba(0, 229, 255, 0.4); padding: 5px 12px; border-radius: 8px; text-decoration: none; transition: all 0.2s ease;">
+                                    <span>📱 สแกน QR เช็คชื่อทันที ➔</span>
+                                </a>
+                            </div>
                         </div>
 
                         <!-- Role 2: Commander / Teacher -->

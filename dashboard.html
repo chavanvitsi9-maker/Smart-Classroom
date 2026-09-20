@@ -1405,6 +1405,31 @@
             box-shadow: none;
         }
 
+        /* QR Check-in Button in Cadet Navbar */
+        .btn-qr-cadet {
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.2) 0%, rgba(2, 132, 199, 0.5) 100%);
+            border: 1.5px solid var(--neon-cyan);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-family: var(--font-hud);
+            font-size: 0.92rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 0 16px rgba(0, 229, 255, 0.35);
+            transition: all 0.2s ease;
+        }
+
+        .btn-qr-cadet:hover {
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.4) 0%, rgba(2, 132, 199, 0.75) 100%);
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.6);
+            transform: translateY(-2px);
+            color: #ffffff;
+        }
+
         /* Responsive 8px Grid & Mobile Ergonomics */
         @media (max-width: 768px) {
             .navbar {
@@ -1505,6 +1530,9 @@
                 </div>
             </div>
             <div class="nav-actions">
+                <a href="../smart-classroom-qr/index.html" class="btn-qr-cadet" title="เข้าสู่ระบบเช็คชื่อด้วยคิวอาร์โค้ด">
+                    <span>📱</span> เช็คชื่อ QR
+                </a>
                 <button id="sfxToggleBtn" class="btn-sfx-toggle" onclick="toggleSound()" title="เปิด/ปิดเสียงเอฟเฟกต์" aria-label="เปิด/ปิดเสียงเอฟเฟกต์">
                     <span id="sfxIcon">🔊</span>
                 </button>
